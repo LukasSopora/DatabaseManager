@@ -73,7 +73,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Database\QueryHelper.cs" />
+    <Compile Include="Model\Album.cs" />
+    <Compile Include="Model\Artist.cs" />
     <Compile Include="Model\Collaboration.cs" />
     <Compile Include="TestData\TestDataReader.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace DatabaseManager.TestData
 {
-    public class TestDataReader
+    public static class TestDataReader
     {
         private const int m_CommasInLine = 3;
         private const string m_Album_Path = "TestData/album.csv";
         private const string m_Artist_Path = "TestData/artist.csv";
+
 
         public static IList<ArtistTO> GetArtists()
         {
