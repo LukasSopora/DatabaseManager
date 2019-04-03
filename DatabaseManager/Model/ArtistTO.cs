@@ -1,56 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DatabaseManager.Model
 {
-    public class Album
+    public class ArtistTO
     {
         private string m_Name;
-        private ObservableCollection<Artist> m_Artists;
         private int m_Year;
-        private int m_Id;
-
-        public int Id
+        private string m_Country;
+        
+        public string Country
         {
-            get { return m_Id; }
-            set { m_Id = value; }
+            get { return m_Country; }
+            set { m_Country = value; }
         }
-
-
+        
         public int Year
         {
             get { return m_Year; }
             set { m_Year = value; }
         }
-
-
-        public ObservableCollection<Artist> Artists
-        {
-            get { return m_Artists; }
-            set { m_Artists = value; }
-        }
-
+        
         public string Name
         {
             get { return m_Name; }
             set { m_Name = value; }
         }
 
-        public Album()
+        public ArtistTO()
         {
 
         }
 
-        public Album(int p_Id, string p_Name, ObservableCollection<Artist> p_Artists, int p_Year)
+        public ArtistTO(string p_Name)
         {
-            m_Id = p_Id;
             m_Name = p_Name;
-            m_Artists = p_Artists;
+        }
+
+        public ArtistTO(string p_Name, int p_Year, string p_Country)
+        {
+            m_Name = p_Name;
             m_Year = p_Year;
+            m_Country = p_Country;
+        }
+
+        public override string ToString()
+        {
+            return m_Name;
         }
     }
 }

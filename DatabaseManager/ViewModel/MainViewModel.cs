@@ -1,4 +1,5 @@
-﻿using DatabaseManager.TestData;
+﻿using DatabaseManager.Model;
+using DatabaseManager.TestData;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -59,7 +60,8 @@ namespace DatabaseManager.ViewModel
 
         public MainViewModel()
         {
-            TestDataReader.GetArtists();
+            var artists = TestDataReader.GetArtists();
+            var albums = TestDataReader.GetAlbums();
             InitalizeCommands();
         }
     }
