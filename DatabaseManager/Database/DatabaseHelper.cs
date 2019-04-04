@@ -23,7 +23,13 @@ namespace DatabaseManager.Database
             IList<Artist> result = new List<Artist>();
             for (int index = 0; index < p_Artists.Count; index++)
             {
-                //enumerate
+                var artist = new Artist();
+                artist.Id = index + 1;
+                artist.Name = p_Artists[index].Name;
+                artist.Year = p_Artists[index].Year;
+                artist.Country = p_Artists[index].Country;
+
+                result.Add(artist);
             }
             return result;
         }
