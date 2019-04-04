@@ -36,5 +36,10 @@ namespace DatabaseManager.Model
             get { return m_Id; }
             set { m_Id = value; }
         }
+
+        public override string ToString()
+        {
+            return m_Name;
+        }
     }
 }
