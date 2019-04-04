@@ -10,12 +10,12 @@ namespace DatabaseManager.Model
     {
         private int m_Id;
         private int m_Year;
-        private string m_Country;
+        private string m_Name;
 
-        public string Country
+        public string Name
         {
-            get { return m_Country; }
-            set { m_Country = value; }
+            get { return m_Name; }
+            set { m_Name = value; }
         }
 
         public int Year
@@ -28,6 +28,11 @@ namespace DatabaseManager.Model
         {
             get { return m_Id; }
             set { m_Id = value; }
+        }
+
+        public override string ToString()
+        {
+            return m_Name;
         }
     }
 }
