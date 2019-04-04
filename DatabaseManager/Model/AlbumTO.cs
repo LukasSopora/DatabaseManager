@@ -13,14 +13,6 @@ namespace DatabaseManager.Model
         private IList<string> m_Artists =
             new List<string>();
         private int m_Year;
-        private int m_Id;
-
-        public int Id
-        {
-            get { return m_Id; }
-            set { m_Id = value; }
-        }
-
 
         public int Year
         {
@@ -46,9 +38,8 @@ namespace DatabaseManager.Model
 
         }
 
-        public AlbumTO(int p_Id, string p_Name, IList<string> p_Artists, int p_Year)
+        public AlbumTO(string p_Name, IList<string> p_Artists, int p_Year)
         {
-            m_Id = p_Id;
             m_Name = p_Name;
             m_Artists = p_Artists;
             m_Year = p_Year;

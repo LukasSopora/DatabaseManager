@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DatabaseManager;
+using DatabaseManager.Database;
 
 namespace DatabaseManager.ViewModel
 {
@@ -60,8 +62,7 @@ namespace DatabaseManager.ViewModel
 
         public MainViewModel()
         {
-            var artists = TestDataReader.GetArtists();
-            var albums = TestDataReader.GetAlbums();
+            DatabaseHelper.InitDataBase();
             InitalizeCommands();
         }
     }
