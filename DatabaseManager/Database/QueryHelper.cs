@@ -23,5 +23,18 @@ namespace DatabaseManager.Database
 
             return result;
         }
+
+        public static IList<Album> GetAllAlbums()
+        {
+            if (!File.Exists(DB_Constants.DB_Album_Path))
+            {
+                return null;
+            }
+
+            var lines = File.ReadAllText(DB_Constants.DB_Album_Path);
+            IList<Album> result = JsonConvert.DeserializeObject<List<Album>>(lines);
+
+            return result;
+        }
     }
 }
