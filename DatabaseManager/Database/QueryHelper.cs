@@ -36,5 +36,18 @@ namespace DatabaseManager.Database
 
             return result;
         }
+
+        public static IList<Collaboration> GetAllCollaborations()
+        {
+            if (!File.Exists(DB_Constants.DB_Collaboration_Path))
+            {
+                return null;
+            }
+
+            var lines = File.ReadAllText(DB_Constants.DB_Collaboration_Path);
+            IList<Collaboration> result = JsonConvert.DeserializeObject<List<Collaboration>>(lines);
+
+            return result;
+        }
     }
 }
