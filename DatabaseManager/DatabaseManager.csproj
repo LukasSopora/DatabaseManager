@@ -74,6 +74,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Database\DatabaseHelper.cs" />
+    <Compile Include="Database\DB_Constants.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DB_Constants.resx</DependentUpon>
+    </Compile>
     <Compile Include="Database\QueryHelper.cs" />
     <Compile Include="Model\Album.cs" />
     <Compile Include="Model\Artist.cs" />
@@ -116,6 +121,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Database\DB_Constants.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DB_Constants.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

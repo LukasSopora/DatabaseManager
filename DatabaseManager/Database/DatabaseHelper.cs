@@ -12,10 +12,6 @@ namespace DatabaseManager.Database
 {
     public static class DatabaseHelper
     {
-        private static string m_DB_Artist_Path = "artist.json";
-        private static string m_DB_Album_Path = "album.json";
-        private static string m_DB_Collaboration_Path = "collaboration.json";
-
         public static void InitDataBase()
         {
             var artistTOs = TestDataReader.GetArtists();
@@ -26,9 +22,9 @@ namespace DatabaseManager.Database
             var albums = EnumerateAlbums(albumTOs);
             var collaborations = PrepareCollaborations(albumTOs, albums, artists);
 
-            CreateTable(artists, m_DB_Artist_Path);
-            CreateTable(albums, m_DB_Album_Path);
-            CreateTable(collaborations, m_DB_Collaboration_Path);
+            CreateTable(artists, DB_Constants.DB_Artist_Path);
+            CreateTable(albums, DB_Constants.DB_Album_Path);
+            CreateTable(collaborations, DB_Constants.DB_Collaboration_Path);
         }
 
         public static void CreateTable(object p_Objects, string p_Path)
