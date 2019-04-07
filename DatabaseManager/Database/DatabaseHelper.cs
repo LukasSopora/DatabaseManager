@@ -12,11 +12,12 @@ namespace DatabaseManager.Database
     {
         public static void InitDataBase()
         {
-            var artistTO = TestDataReader.GetArtists();
-            var albumTO = TestDataReader.GetAlbums();
+            var artistTOs = TestDataReader.GetArtists();
+            var albumTOs = TestDataReader.GetAlbums();
 
-            var artists = EnumerateArtists(artistTO);
-            FilterAlbums(albumTO, artists);
+            var artists = EnumerateArtists(artistTOs);
+            FilterAlbums(albumTOs, artists);
+            var albums = EnumerateAlbums(albumTOs);
         }
 
         private static IList<Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
@@ -44,6 +45,21 @@ namespace DatabaseManager.Database
                     p_Albums.Remove(album);
                 }
             }
+        }
+
+        private static IList<Album> EnumerateAlbums(IList<AlbumTO> p_Albums)
+        {
+            IList<Album> result = new List<Album>();
+            for (int index = 0; index < p_Albums.Count; index++)
+            {
+                var album = new Album();
+                album.Id = index + 1;
+                album.Name = p_Albums[index].Name;
+                album.Year = p_Albums[index].Year;
+
+                result.Add(album);
+            }
+            return result;
         }
 
         private static bool AllArtistsExist(AlbumTO p_Album, IList<Artist> p_Artists)
