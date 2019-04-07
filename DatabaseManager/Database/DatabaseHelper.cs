@@ -1,7 +1,9 @@
 ﻿using DatabaseManager.Model;
 using DatabaseManager.TestData;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +12,10 @@ namespace DatabaseManager.Database
 {
     public static class DatabaseHelper
     {
+        private static string m_DB_Artist_Path = "artist.json";
+        private static string m_DB_Album_Path = "album.json";
+        private static string m_DB_Collaboration_Path = "collaboration.json";
+
         public static void InitDataBase()
         {
             var artistTOs = TestDataReader.GetArtists();
@@ -19,6 +25,20 @@ namespace DatabaseManager.Database
             FilterAlbums(albumTOs, artists);
             var albums = EnumerateAlbums(albumTOs);
             var collaborations = PrepareCollaborations(albumTOs, albums, artists);
+
+            CreateTable(artists, m_DB_Artist_Path);
+            CreateTable(albums, m_DB_Album_Path);
+            CreateTable(collaborations, m_DB_Collaboration_Path);
+        }
+
+        public static void CreateTable(object p_Objects, string p_Path)
+        {
+            if(!File.Exists(p_Path))
+            {
+                File.Create(p_Path);
+            }
+            var json = JsonConvert.SerializeObject(p_Objects);
+            File.WriteAllText(p_Path, json);
         }
 
         private static IList<Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
