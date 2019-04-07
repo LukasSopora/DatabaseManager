@@ -18,6 +18,7 @@ namespace DatabaseManager.Database
             var artists = EnumerateArtists(artistTOs);
             FilterAlbums(albumTOs, artists);
             var albums = EnumerateAlbums(albumTOs);
+            var collaborations = PrepareCollaborations(albumTOs, albums, artists);
         }
 
         private static IList<Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
@@ -45,6 +46,25 @@ namespace DatabaseManager.Database
                     p_Albums.Remove(album);
                 }
             }
+        }
+
+        private static IList<Collaboration> PrepareCollaborations(IList<AlbumTO> p_AlbumTOs, IList<Album> p_Albums, IList<Artist> p_Artists)
+        {
+            IList<Collaboration> result = new List<Collaboration>();
+
+            foreach(var album in p_Albums)
+            {
+                foreach(var artistName in p_AlbumTOs.Where(x => x.Name.Equals(album.Name)).First().Artists)
+                {
+                    var collaboration = new Collaboration();
+                    collaboration.AlbumId = album.Id;
+                    collaboration.ArtistId = p_Artists.Where(x => x.Name.Equals(artistName)).First().Id;
+
+                    result.Add(collaboration);
+                }
+            }
+
+            return result;
         }
 
         private static IList<Album> EnumerateAlbums(IList<AlbumTO> p_Albums)
