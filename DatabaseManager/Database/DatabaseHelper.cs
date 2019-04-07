@@ -13,9 +13,10 @@ namespace DatabaseManager.Database
         public static void InitDataBase()
         {
             var artistTO = TestDataReader.GetArtists();
-            var albumIO = TestDataReader.GetAlbums();
+            var albumTO = TestDataReader.GetAlbums();
 
             var artists = EnumerateArtists(artistTO);
+            FilterAlbums(albumTO, artists);
         }
 
         private static IList<Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
@@ -32,6 +33,29 @@ namespace DatabaseManager.Database
                 result.Add(artist);
             }
             return result;
+        }
+
+        private static void FilterAlbums(IList<AlbumTO> p_Albums, IList<Artist> p_Artists)
+        {
+            foreach(var album in p_Albums.ToList())
+            {
+                if(!AllArtistsExist(album, p_Artists))
+                {
+                    p_Albums.Remove(album);
+                }
+            }
+        }
+
+        private static bool AllArtistsExist(AlbumTO p_Album, IList<Artist> p_Artists)
+        {
+            foreach(var artistName in p_Album.Artists)
+            {
+                if(p_Artists.Where(x => x.Name.Equals(artistName)).Count() == 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

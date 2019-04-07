@@ -44,5 +44,10 @@ namespace DatabaseManager.Model
             m_Artists = p_Artists;
             m_Year = p_Year;
         }
+
+        public override string ToString()
+        {
+            return m_Name;
+        }
     }
 }
