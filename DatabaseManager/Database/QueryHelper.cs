@@ -37,9 +37,15 @@ namespace DatabaseManager.Database
                 return null;
             }
 
-            var lines = File.ReadAllText(DB_Constants.DB_Album_Path);
-            IList<Album> result = JsonConvert.DeserializeObject<List<Album>>(lines);
-
+            IList<Album> result = new List<Album>();
+            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    result.Add(JsonConvert.DeserializeObject<Album>(line));
+                }
+            }
             return result;
         }
 
@@ -50,9 +56,15 @@ namespace DatabaseManager.Database
                 return null;
             }
 
-            var lines = File.ReadAllText(DB_Constants.DB_Collaboration_Path);
-            IList<Collaboration> result = JsonConvert.DeserializeObject<List<Collaboration>>(lines);
-
+            IList<Collaboration> result = new List<Collaboration>();
+            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    result.Add(JsonConvert.DeserializeObject<Collaboration>(line));
+                }
+            }
             return result;
         }
 
