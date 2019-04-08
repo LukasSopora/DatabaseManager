@@ -84,5 +84,22 @@ namespace DatabaseManager.Database
             }
             return null;
         }
+
+        public static Artist GetAlbumById(int p_AlbumId)
+        {
+            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    var album = JsonConvert.DeserializeObject<Artist>(line);
+                    if (album.Id == p_AlbumId)
+                    {
+                        return album;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
