@@ -14,13 +14,31 @@ namespace DatabaseManagerTests
         }
 
         [TestMethod]
-        public void GetAllTests()
+        public void GetAllArtists()
         {
-            DatabaseHelper.InitDataBase();
-
             QueryHelper.GetAllArtists();
+        }
+
+        [TestMethod]
+        public void GetAllAlbums()
+        {
             QueryHelper.GetAllAlbums();
+        }
+
+        [TestMethod]
+        public void GetAllCollaborations()
+        {
             QueryHelper.GetAllCollaborations();
+        }
+
+        [TestMethod]
+        public void GetArtistById()
+        {
+            QueryHelper.GetArtistById(1);
+            QueryHelper.GetArtistById(2);
+            QueryHelper.GetArtistById(3);
+            QueryHelper.GetArtistById(4);
+            QueryHelper.GetArtistById(5);
         }
     }
 }
