@@ -27,7 +27,7 @@ namespace DatabaseManager.Database
             CreateTable(collaborations, DB_Constants.DB_Collaboration_Path);
         }
 
-        public static void CreateTable(object p_Objects, string p_Path)
+        private static void CreateTable(object p_Objects, string p_Path)
         {
             if(!File.Exists(p_Path))
             {

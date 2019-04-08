@@ -49,5 +49,17 @@ namespace DatabaseManager.Database
 
             return result;
         }
+
+        public static Artist GetArtistById(int p_ArtistId)
+        {
+            try
+            {
+                return GetAllArtists().Where(x => x.Id.Equals(p_ArtistId)).First();
+            }
+            catch(Exception)
+            {
+                return null;
+            }
+        }
     }
 }
