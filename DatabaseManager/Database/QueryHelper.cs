@@ -18,9 +18,15 @@ namespace DatabaseManager.Database
                 return null;
             }
 
-            var lines = File.ReadAllText(DB_Constants.DB_Artist_Path);
-            IList<Artist> result = JsonConvert.DeserializeObject<List<Artist>>(lines);
-
+            IList<Artist> result = new List<Artist>();
+            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    result.Add(JsonConvert.DeserializeObject<Artist>(line));
+                }
+            }
             return result;
         }
 
