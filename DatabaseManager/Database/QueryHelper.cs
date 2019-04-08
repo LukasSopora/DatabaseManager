@@ -52,14 +52,15 @@ namespace DatabaseManager.Database
 
         public static Artist GetArtistById(int p_ArtistId)
         {
-            try
+            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
             {
-                return GetAllArtists().Where(x => x.Id.Equals(p_ArtistId)).First();
+                string line;
+                while((line = reader.ReadLine()) != null)
+                {
+
+                }
             }
-            catch(Exception)
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

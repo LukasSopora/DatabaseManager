@@ -22,19 +22,40 @@ namespace DatabaseManager.Database
             var albums = EnumerateAlbums(albumTOs);
             var collaborations = PrepareCollaborations(albumTOs, albums, artists);
 
+            ClearFile(DB_Constants.DB_Artist_Path);
+            ClearFile(DB_Constants.DB_Album_Path);
+            ClearFile(DB_Constants.DB_Collaboration_Path);
+
             CreateTable(artists, DB_Constants.DB_Artist_Path);
             CreateTable(albums, DB_Constants.DB_Album_Path);
             CreateTable(collaborations, DB_Constants.DB_Collaboration_Path);
         }
 
-        private static void CreateTable(object p_Objects, string p_Path)
+        private static void ClearFile(string p_Path)
+        {
+            if(!File.Exists(p_Path))
+            {
+                return;
+            }
+
+            File.WriteAllText(p_Path, string.Empty);
+        }
+
+        private static void CreateTable(IEnumerable<object> p_Objects, string p_Path)
         {
             if(!File.Exists(p_Path))
             {
                 File.Create(p_Path);
             }
-            var json = JsonConvert.SerializeObject(p_Objects);
-            File.WriteAllText(p_Path, json);
+
+            using (var writer = new StreamWriter(p_Path, append: true))
+            {
+                foreach (var obj in p_Objects)
+                {
+                    var json = JsonConvert.SerializeObject(obj);
+                    writer.WriteLine(json);
+                }
+            }
         }
 
         private static IList<Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
