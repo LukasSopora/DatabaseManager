@@ -75,7 +75,11 @@ namespace DatabaseManager.Database
                 string line;
                 while((line = reader.ReadLine()) != null)
                 {
-
+                    var artist = JsonConvert.DeserializeObject<Artist>(line);
+                    if(artist.Id == p_ArtistId)
+                    {
+                        return artist;
+                    }
                 }
             }
             return null;
