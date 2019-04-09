@@ -49,6 +49,17 @@ namespace DatabaseManager.Database
             return result;
         }
 
+        public static IList<Album> GetAllAlbums(int p_ArtistId)
+        {
+            IList<Album> result = new List<Album>();
+            var collaborations = GetCollaborationByArtistId(p_ArtistId);
+            foreach(var collab in collaborations)
+            {
+                result.Add(GetAlbumById(collab.AlbumId));
+            }
+            return result;
+        }
+
         public static IList<Collaboration> GetAllCollaborations()
         {
             if (!File.Exists(DB_Constants.DB_Collaboration_Path))
@@ -85,14 +96,14 @@ namespace DatabaseManager.Database
             return null;
         }
 
-        public static Artist GetAlbumById(int p_AlbumId)
+        public static Album GetAlbumById(int p_AlbumId)
         {
             using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    var album = JsonConvert.DeserializeObject<Artist>(line);
+                    var album = JsonConvert.DeserializeObject<Album>(line);
                     if (album.Id == p_AlbumId)
                     {
                         return album;
