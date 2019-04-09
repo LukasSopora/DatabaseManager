@@ -49,16 +49,6 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static IList<Album> GetAllAlbums(int p_ArtistId)
-        {
-            IList<Album> result = new List<Album>();
-            var collaborations = GetCollaborationByArtistId(p_ArtistId);
-            foreach(var collab in collaborations)
-            {
-                result.Add(GetAlbumById(collab.AlbumId));
-            }
-            return result;
-        }
 
         public static IList<Collaboration> GetAllCollaborations()
         {
@@ -148,5 +138,36 @@ namespace DatabaseManager.Database
             }
             return result;
         }
+
+        #region Queries
+        public static IList<Album> GetAllAlbumsByArtistId(int p_ArtistId)
+        {
+            IList<Album> result = new List<Album>();
+            var collaborations = GetCollaborationByArtistId(p_ArtistId);
+            foreach(var collab in collaborations)
+            {
+                result.Add(GetAlbumById(collab.AlbumId));
+            }
+            return result;
+        }
+
+        public static int GetLastReleasedAlbum()
+        {
+            int latest = 0;
+            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
+            {
+                string line;
+                while((line = reader.ReadLine()) != null)
+                {
+                    var album = JsonConvert.DeserializeObject<Album>(line);
+                    if(album.Year > latest)
+                    {
+                        latest = album.Year;
+                    }
+                }
+            }
+            return latest;
+        }
+        #endregion
     }
 }

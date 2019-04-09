@@ -74,11 +74,11 @@ namespace DatabaseManagerTests
         [TestMethod]
         public void GetAllAlbumsByArtistId()
         {
-            QueryHelper.GetAllAlbums(1);
-            QueryHelper.GetAllAlbums(2);
-            QueryHelper.GetAllAlbums(3);
-            QueryHelper.GetAllAlbums(4);
-            QueryHelper.GetAllAlbums(5);
+            QueryHelper.GetAllAlbumsByArtistId(1);
+            QueryHelper.GetAllAlbumsByArtistId(2);
+            QueryHelper.GetAllAlbumsByArtistId(3);
+            QueryHelper.GetAllAlbumsByArtistId(4);
+            QueryHelper.GetAllAlbumsByArtistId(5);
         }
     }
 }
