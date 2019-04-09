@@ -101,5 +101,23 @@ namespace DatabaseManager.Database
             }
             return null;
         }
+
+        public static IList<Collaboration> GetCollaborationByArtistId(int p_ArtistId)
+        {
+            IList<Collaboration> result = new List<Collaboration>();
+            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    var collaboration = JsonConvert.DeserializeObject<Collaboration>(line);
+                    if (collaboration.ArtistId == p_ArtistId)
+                    {
+                        result.Add(collaboration);
+                    }
+                }
+            }
+            return result;
+        }
     }
 }

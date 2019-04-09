@@ -50,5 +50,15 @@ namespace DatabaseManagerTests
             QueryHelper.GetAlbumById(4);
             QueryHelper.GetAlbumById(5);
         }
+
+        [TestMethod]
+        public void GetCollaborationByArtistId()
+        {
+            QueryHelper.GetCollaborationByArtistId(1);
+            QueryHelper.GetCollaborationByArtistId(2);
+            QueryHelper.GetCollaborationByArtistId(3);
+            QueryHelper.GetCollaborationByArtistId(4);
+            QueryHelper.GetCollaborationByArtistId(5);
+        }
     }
 }
