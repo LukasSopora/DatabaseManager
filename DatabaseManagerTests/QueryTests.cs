@@ -71,7 +71,7 @@ namespace DatabaseManagerTests
             QueryHelper.GetCollaborationByAlbumId(5);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Queries")]
         public void GetAllAlbumsByArtistId()
         {
             QueryHelper.GetAllAlbumsByArtistId(1);
@@ -79,6 +79,12 @@ namespace DatabaseManagerTests
             QueryHelper.GetAllAlbumsByArtistId(3);
             QueryHelper.GetAllAlbumsByArtistId(4);
             QueryHelper.GetAllAlbumsByArtistId(5);
+        }
+
+        [TestMethod, TestCategory("Queries")]
+        public void GetLatestAlbumRelease()
+        {
+            QueryHelper.GetLatestAlbumRelease();
         }
     }
 }

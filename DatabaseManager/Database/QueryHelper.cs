@@ -151,7 +151,7 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static int GetLastReleasedAlbum()
+        public static int GetLatestAlbumRelease()
         {
             int latest = 0;
             using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
