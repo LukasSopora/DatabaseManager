@@ -31,6 +31,30 @@ namespace DatabaseManager.Database
             CreateTable(collaborations, DB_Constants.DB_Collaboration_Path);
         }
 
+        public static void CreateDBDirectories()
+        {
+            //Database
+            if (!Directory.Exists(DB_Constants.DB_DataBase_Directory))
+            {
+                Directory.CreateDirectory(DB_Constants.DB_DataBase_Directory);
+            }
+            //Artist
+            if (!Directory.Exists(DB_Constants.DB_Artist_Directory))
+            {
+                Directory.CreateDirectory(DB_Constants.DB_Artist_Directory);
+            }
+            //Album
+            if (!Directory.Exists(DB_Constants.DB_Album_Directory))
+            {
+                Directory.CreateDirectory(DB_Constants.DB_Album_Directory);
+            }
+            //Collaboration
+            if (!Directory.Exists(DB_Constants.DB_Collaboration_Directory))
+            {
+                Directory.CreateDirectory(DB_Constants.DB_Collaboration_Directory);
+            }
+        }
+
         private static void ClearFile(string p_Path)
         {
             if(!File.Exists(p_Path))

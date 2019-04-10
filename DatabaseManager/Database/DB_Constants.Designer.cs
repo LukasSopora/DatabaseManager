@@ -61,7 +61,16 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to album.json.
+        ///   Looks up a localized string similar to Album.
+        /// </summary>
+        internal static string DB_Album_Directory {
+            get {
+                return ResourceManager.GetString("DB_Album_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database//Album//album.json.
         /// </summary>
         internal static string DB_Album_Path {
             get {
@@ -70,7 +79,16 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to artist.json.
+        ///   Looks up a localized string similar to Artist.
+        /// </summary>
+        internal static string DB_Artist_Directory {
+            get {
+                return ResourceManager.GetString("DB_Artist_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database//Artist//artist.json.
         /// </summary>
         internal static string DB_Artist_Path {
             get {
@@ -79,11 +97,29 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to collaboration.json.
+        ///   Looks up a localized string similar to Collaboration.
+        /// </summary>
+        internal static string DB_Collaboration_Directory {
+            get {
+                return ResourceManager.GetString("DB_Collaboration_Directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database//Collaboration//collaboration.json.
         /// </summary>
         internal static string DB_Collaboration_Path {
             get {
                 return ResourceManager.GetString("DB_Collaboration_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database.
+        /// </summary>
+        internal static string DB_DataBase_Directory {
+            get {
+                return ResourceManager.GetString("DB_DataBase_Directory", resourceCulture);
             }
         }
     }
