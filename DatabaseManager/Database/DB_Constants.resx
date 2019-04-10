@@ -118,19 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DB_Album_Directory" xml:space="preserve">
-    <value>Album</value>
+    <value>Database//Album</value>
   </data>
   <data name="DB_Album_Path" xml:space="preserve">
     <value>Database//Album//album.json</value>
   </data>
   <data name="DB_Artist_Directory" xml:space="preserve">
-    <value>Artist</value>
+    <value>Database//Artist</value>
   </data>
   <data name="DB_Artist_Path" xml:space="preserve">
     <value>Database//Artist//artist.json</value>
   </data>
   <data name="DB_Collaboration_Directory" xml:space="preserve">
-    <value>Collaboration</value>
+    <value>Database//Collaboration</value>
   </data>
   <data name="DB_Collaboration_Path" xml:space="preserve">
     <value>Database//Collaboration//collaboration.json</value>

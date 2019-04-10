@@ -22,6 +22,8 @@ namespace DatabaseManager.Database
             var albums = EnumerateAlbums(albumTOs);
             var collaborations = PrepareCollaborations(albumTOs, albums, artists);
 
+            InitDatabaseStructure();
+
             ClearFile(DB_Constants.DB_Artist_Path);
             ClearFile(DB_Constants.DB_Album_Path);
             ClearFile(DB_Constants.DB_Collaboration_Path);
@@ -31,7 +33,32 @@ namespace DatabaseManager.Database
             CreateTable(collaborations, DB_Constants.DB_Collaboration_Path);
         }
 
-        public static void CreateDBDirectories()
+        private static void InitDatabaseStructure()
+        {
+            InitDBDirectories();
+            InitDataBaseFiles();
+        }
+
+        private static void InitDataBaseFiles()
+        {
+            //Artist
+            if (!File.Exists(DB_Constants.DB_Artist_Path))
+            {
+                File.Create(DB_Constants.DB_Artist_Path);
+            }
+            //Album
+            if (!File.Exists(DB_Constants.DB_Album_Path))
+            {
+                File.Create(DB_Constants.DB_Album_Path);
+            }
+            //Collaboration
+            if (!File.Exists(DB_Constants.DB_Collaboration_Path))
+            {
+                File.Create(DB_Constants.DB_Collaboration_Path);
+            }
+        }
+
+        private static void InitDBDirectories()
         {
             //Database
             if (!Directory.Exists(DB_Constants.DB_DataBase_Directory))
@@ -55,6 +82,11 @@ namespace DatabaseManager.Database
             }
         }
 
+        private static void InitDBFiles()
+        {
+
+        }
+
         private static void ClearFile(string p_Path)
         {
             if(!File.Exists(p_Path))
@@ -67,11 +99,6 @@ namespace DatabaseManager.Database
 
         private static void CreateTable(IEnumerable<object> p_Objects, string p_Path)
         {
-            if(!File.Exists(p_Path))
-            {
-                File.Create(p_Path);
-            }
-
             using (var writer = new StreamWriter(p_Path, append: true))
             {
                 foreach (var obj in p_Objects)

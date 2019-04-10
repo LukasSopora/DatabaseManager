@@ -61,7 +61,7 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Album.
+        ///   Looks up a localized string similar to Database//Album.
         /// </summary>
         internal static string DB_Album_Directory {
             get {
@@ -79,7 +79,7 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Artist.
+        ///   Looks up a localized string similar to Database//Artist.
         /// </summary>
         internal static string DB_Artist_Directory {
             get {
@@ -97,7 +97,7 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collaboration.
+        ///   Looks up a localized string similar to Database//Collaboration.
         /// </summary>
         internal static string DB_Collaboration_Directory {
             get {
