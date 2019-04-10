@@ -86,5 +86,21 @@ namespace DatabaseManagerTests
         {
             QueryHelper.GetLatestAlbumRelease();
         }
+
+        [TestMethod, TestCategory("Queries")]
+        public void GetArtistFoundingYear()
+        {
+            QueryHelper.GetArtistFoundingYear(1);
+            QueryHelper.GetArtistFoundingYear(2);
+            QueryHelper.GetArtistFoundingYear(3);
+            QueryHelper.GetArtistFoundingYear(4);
+            QueryHelper.GetArtistFoundingYear(5);
+        }
+
+        [TestMethod, TestCategory("Queries")]
+        public void GetArtistsNoAlbums()
+        {
+            QueryHelper.GetArtistsNoAlbums();
+        }
     }
 }

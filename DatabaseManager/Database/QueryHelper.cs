@@ -168,6 +168,39 @@ namespace DatabaseManager.Database
             }
             return latest;
         }
+
+        public static int GetArtistFoundingYear(int p_ArtistId)
+        {
+            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
+            {
+                string line;
+                while((line = reader.ReadLine()) != null)
+                {
+                    var artist = JsonConvert.DeserializeObject<Artist>(line);
+                    if(artist.Id == p_ArtistId)
+                    {
+                        return artist.Year;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        public static IList<Artist> GetArtistsNoAlbums()
+        {
+            IList<Artist> result = new List<Artist>();
+            var collaborations = GetAllCollaborations();
+            var artists = GetAllArtists();
+
+            foreach(var artist in artists)
+            {
+                if(GetAllAlbumsByArtistId(artist.Id).Count == 0)
+                {
+                    result.Add(artist);
+                }
+            }
+            return result;
+        }
         #endregion
     }
 }
