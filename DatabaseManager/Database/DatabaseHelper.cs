@@ -82,18 +82,12 @@ namespace DatabaseManager.Database
             }
         }
 
-        private static void InitDBFiles()
-        {
-
-        }
-
         private static void ClearFile(string p_Path)
         {
             if(!File.Exists(p_Path))
             {
                 return;
             }
-
             File.WriteAllText(p_Path, string.Empty);
         }
 
