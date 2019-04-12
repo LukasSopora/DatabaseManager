@@ -9,8 +9,35 @@ using System.Threading.Tasks;
 
 namespace DatabaseManager.Database
 {
-    public static class QueryHelper
+    public class QueryHelper
     {
+        private IDictionary<int, Album> m_Albums;
+        private IDictionary<string, Artist> m_Artists;
+        private IDictionary<Artist, Album> m_Collaborations;
+
+        public QueryHelper()
+        {
+            m_Albums = InitAlbums();
+        }
+
+        private IDictionary<int, Album> InitAlbums()
+        {
+            if(!File.Exists(DB_Constants.DB_Album_Directory))
+            {
+                return null;
+            }
+
+            IDictionary<int, Album> result = new Dictionary<int, Album>();
+            var reader = new StreamReader(DB_Constants.DB_Album_Directory);
+            string line;
+            while((line = reader.ReadLine()) != null)
+            {
+                var album = JsonConvert.DeserializeObject<Album>(line);
+                result.Add(album.Id, album);
+            }
+            return result;
+        }
+
         public static IList<Artist> GetAllArtists()
         {
             if(!File.Exists(DB_Constants.DB_Artist_Path))
