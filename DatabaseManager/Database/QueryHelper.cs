@@ -17,7 +17,9 @@ namespace DatabaseManager.Database
 
         public QueryHelper()
         {
+            m_Artists = InitArtists();
             m_Albums = InitAlbums();
+            m_Collaborations = InitCollaborations();
         }
 
         private IDictionary<int, Album> InitAlbums()
@@ -52,6 +54,24 @@ namespace DatabaseManager.Database
             {
                 var artist = JsonConvert.DeserializeObject<Artist>(line);
                 result.Add(artist.Id, artist);
+            }
+            return result;
+        }
+
+        private IDictionary<int, int> InitCollaborations()
+        {
+            if (!File.Exists(DB_Constants.DB_Collaboration_Directory))
+            {
+                return null;
+            }
+
+            IDictionary<int, int> result = new Dictionary<int, int>();
+            var reader = new StreamReader(DB_Constants.DB_Collaboration_Directory);
+            string line;
+            while((line = reader.ReadLine()) != null)
+            {
+                var collabo = JsonConvert.DeserializeObject<Collaboration>(line);
+                result.Add(collabo.ArtistId, collabo.AlbumId);
             }
             return result;
         }
