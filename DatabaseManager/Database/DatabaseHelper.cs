@@ -17,7 +17,7 @@ namespace DatabaseManager.Database
             var artistTOs = TestDataReader.GetArtists();
             var albumTOs = TestDataReader.GetAlbums();
 
-            var artists = EnumerateArtists(artistTOs);
+            var artists = EnumerateArtists(artistTOs.Values.ToList());
             FilterAlbums(albumTOs, artists);
             var albums = EnumerateAlbums(albumTOs);
             var collaborations = PrepareCollaborations(albumTOs, albums, artists);
@@ -28,8 +28,8 @@ namespace DatabaseManager.Database
             ClearFile(DB_Constants.DB_Album_Path);
             ClearFile(DB_Constants.DB_Collaboration_Path);
 
-            CreateTable(artists, DB_Constants.DB_Artist_Path);
-            CreateTable(albums, DB_Constants.DB_Album_Path);
+            CreateTable(artists.Values, DB_Constants.DB_Artist_Path);
+            CreateTable(albums.Values, DB_Constants.DB_Album_Path);
             CreateTable(collaborations, DB_Constants.DB_Collaboration_Path);
         }
 
@@ -103,9 +103,9 @@ namespace DatabaseManager.Database
             }
         }
 
-        private static IList<Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
+        private static IDictionary<string, Artist> EnumerateArtists(IList<ArtistTO> p_Artists)
         {
-            IList<Artist> result = new List<Artist>();
+            IDictionary<string, Artist> result = new Dictionary<string, Artist>();
             for (int index = 0; index < p_Artists.Count; index++)
             {
                 var artist = new Artist();
@@ -114,33 +114,34 @@ namespace DatabaseManager.Database
                 artist.Year = p_Artists[index].Year;
                 artist.Country = p_Artists[index].Country;
 
-                result.Add(artist);
+                result.Add(artist.Name, artist);
             }
             return result;
         }
 
-        private static void FilterAlbums(IList<AlbumTO> p_Albums, IList<Artist> p_Artists)
+        private static void FilterAlbums(IDictionary<int, AlbumTO> p_Albums, IDictionary<string, Artist> p_Artists)
         {
-            foreach(var album in p_Albums.ToList())
+            foreach(var album in p_Albums)
             {
-                if(!AllArtistsExist(album, p_Artists))
+                if(!AllArtistsExist(album.Value, p_Artists))
                 {
                     p_Albums.Remove(album);
                 }
             }
         }
 
-        private static IList<Collaboration> PrepareCollaborations(IList<AlbumTO> p_AlbumTOs, IList<Album> p_Albums, IList<Artist> p_Artists)
+        private static IList<Collaboration> PrepareCollaborations(IDictionary<int, AlbumTO> p_AlbumTOs, IDictionary<int, Album> p_Albums, IDictionary<string, Artist> p_Artists)
         {
             IList<Collaboration> result = new List<Collaboration>();
 
-            foreach(var album in p_Albums)
+            foreach (var pair in p_Albums)
             {
-                foreach(var artistName in p_AlbumTOs.Where(x => x.Name.Equals(album.Name)).First().Artists)
+                string[] artistNames = p_AlbumTOs[pair.Key].Artists.ToArray();
+                foreach (var artistName in artistNames)
                 {
                     var collaboration = new Collaboration();
-                    collaboration.AlbumId = album.Id;
-                    collaboration.ArtistId = p_Artists.Where(x => x.Name.Equals(artistName)).First().Id;
+                    collaboration.AlbumId = pair.Value.Id;
+                    collaboration.ArtistId = p_Artists[artistName].Id;
 
                     result.Add(collaboration);
                 }
@@ -149,26 +150,26 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        private static IList<Album> EnumerateAlbums(IList<AlbumTO> p_Albums)
+        private static IDictionary<int, Album> EnumerateAlbums(IDictionary<int, AlbumTO> p_Albums)
         {
-            IList<Album> result = new List<Album>();
-            for (int index = 0; index < p_Albums.Count; index++)
+            IDictionary<int, Album> result = new Dictionary<int, Album>();
+            foreach(var pair in p_Albums)
             {
                 var album = new Album();
-                album.Id = index + 1;
-                album.Name = p_Albums[index].Name;
-                album.Year = p_Albums[index].Year;
+                album.Id = pair.Key;
+                album.Name = pair.Value.Name;
+                album.Year = pair.Value.Year;
 
-                result.Add(album);
+                result.Add(pair.Key, album);
             }
             return result;
         }
 
-        private static bool AllArtistsExist(AlbumTO p_Album, IList<Artist> p_Artists)
+        private static bool AllArtistsExist(AlbumTO p_Album, IDictionary<string, Artist> p_Artists)
         {
             foreach(var artistName in p_Album.Artists)
             {
-                if(p_Artists.Where(x => x.Name.Equals(artistName)).Count() == 0)
+                if (!p_Artists.ContainsKey(artistName))
                 {
                     return false;
                 }

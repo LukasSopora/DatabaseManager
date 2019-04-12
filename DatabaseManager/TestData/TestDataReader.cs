@@ -15,13 +15,13 @@ namespace DatabaseManager.TestData
     public static class TestDataReader
     {
         private const int m_CommasInLine = 3;
-        private const string m_Album_Path = "TestData/album.csv";
-        private const string m_Artist_Path = "TestData/artist.csv";
+        private const string m_Album_Path = "TestData/albums.csv";
+        private const string m_Artist_Path = "TestData/artists.csv";
 
 
-        public static IList<ArtistTO> GetArtists()
+        public static IDictionary<string, ArtistTO> GetArtists()
         {
-            var result = new List<ArtistTO>();
+            IDictionary<string, ArtistTO> result = new Dictionary<string, ArtistTO>();
             var lines = File.ReadAllLines(m_Artist_Path).Where(x => !x.First().Equals('#')).ToList();
 
             foreach (var line in lines)
@@ -40,23 +40,26 @@ namespace DatabaseManager.TestData
                 artist.Year = Convert.ToInt32(subStrings[1]);
                 artist.Country = subStrings[2];
 
-                result.Add(artist);
+                result.Add(artist.Name, artist);
             }
 
             return result;
         }
 
-        public static IList<AlbumTO> GetAlbums()
+        public static IDictionary<int, AlbumTO> GetAlbums()
         {
-            var result = new List<AlbumTO>();
-            var lines = File.ReadAllLines(m_Album_Path).Where(x => !x.First().Equals('#')).ToList();
+            IDictionary<int, AlbumTO> result = new Dictionary<int, AlbumTO>();
+            var reader = new StreamReader(m_Album_Path);
+            reader.ReadLine(); //skip first header line
+            string line;
+            int count = 1;  
 
-            foreach(string line in lines)
+            while((line = reader.ReadLine()) != null)
             {
                 var commas = GetCommasInLine(line, m_CommasInLine);
                 if (commas.Count < 2)
                 {
-                    Console.WriteLine(string.Format("Incorrect line: Not enough commas in line {0}", lines.IndexOf(line)));
+                    Console.WriteLine(string.Format("Incorrect line: Not enough commas in line {0}", count));
                     continue;
                 }
                 var indexPairs = commas.Count == 2 ? GetPropStartEndIndex(commas, line.Length) : GetPropStartEndIndex(commas);
@@ -77,7 +80,8 @@ namespace DatabaseManager.TestData
                     album.Artists.Add(artist);
                 }
 
-                result.Add(album);
+                result.Add(count, album);
+                count++;
             }
 
             return result;
