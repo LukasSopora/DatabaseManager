@@ -12,8 +12,8 @@ namespace DatabaseManager.Database
     public class QueryHelper
     {
         private IDictionary<int, Album> m_Albums;
-        private IDictionary<string, Artist> m_Artists;
-        private IDictionary<Artist, Album> m_Collaborations;
+        private IDictionary<int, Artist> m_Artists;
+        private IDictionary<int, int> m_Collaborations;
 
         public QueryHelper()
         {
@@ -34,6 +34,24 @@ namespace DatabaseManager.Database
             {
                 var album = JsonConvert.DeserializeObject<Album>(line);
                 result.Add(album.Id, album);
+            }
+            return result;
+        }
+
+        private IDictionary<int, Artist> InitArtists()
+        {
+            if (!File.Exists(DB_Constants.DB_Artist_Directory))
+            {
+                return null;
+            }
+
+            IDictionary<int, Artist> result = new Dictionary<int, Artist>();
+            var reader = new StreamReader(DB_Constants.DB_Artist_Directory);
+            string line;
+            while((line = reader.ReadLine()) != null)
+            {
+                var artist = JsonConvert.DeserializeObject<Artist>(line);
+                result.Add(artist.Id, artist);
             }
             return result;
         }
