@@ -76,7 +76,7 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static IList<Artist> GetAllArtists()
+        public IList<Artist> GetAllArtists()
         {
             if(!File.Exists(DB_Constants.DB_Artist_Path))
             {
@@ -95,7 +95,7 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static IList<Album> GetAllAlbums()
+        public IList<Album> GetAllAlbums()
         {
             if (!File.Exists(DB_Constants.DB_Album_Path))
             {
@@ -115,7 +115,7 @@ namespace DatabaseManager.Database
         }
 
 
-        public static IList<Collaboration> GetAllCollaborations()
+        public IList<Collaboration> GetAllCollaborations()
         {
             if (!File.Exists(DB_Constants.DB_Collaboration_Path))
             {
@@ -134,7 +134,7 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static Artist GetArtistById(int p_ArtistId)
+        public Artist GetArtistById(int p_ArtistId)
         {
             using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
             {
@@ -151,7 +151,7 @@ namespace DatabaseManager.Database
             return null;
         }
 
-        public static Album GetAlbumById(int p_AlbumId)
+        public Album GetAlbumById(int p_AlbumId)
         {
             using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
             {
@@ -168,7 +168,7 @@ namespace DatabaseManager.Database
             return null;
         }
 
-        public static IList<Collaboration> GetCollaborationByArtistId(int p_ArtistId)
+        public IList<Collaboration> GetCollaborationByArtistId(int p_ArtistId)
         {
             IList<Collaboration> result = new List<Collaboration>();
             using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
@@ -186,7 +186,7 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static IList<Collaboration> GetCollaborationByAlbumId(int p_AlbumId)
+        public IList<Collaboration> GetCollaborationByAlbumId(int p_AlbumId)
         {
             IList<Collaboration> result = new List<Collaboration>();
             using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
@@ -205,7 +205,7 @@ namespace DatabaseManager.Database
         }
 
         #region Queries
-        public static IList<Album> GetAllAlbumsByArtistId(int p_ArtistId)
+        public IList<Album> GetAllAlbumsByArtistId(int p_ArtistId)
         {
             IList<Album> result = new List<Album>();
             var collaborations = GetCollaborationByArtistId(p_ArtistId);
@@ -216,7 +216,7 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        public static int GetLatestAlbumRelease()
+        public int GetLatestAlbumRelease()
         {
             int latest = 0;
             using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
@@ -234,7 +234,7 @@ namespace DatabaseManager.Database
             return latest;
         }
 
-        public static int GetArtistFoundingYear(int p_ArtistId)
+        public int GetArtistFoundingYear(int p_ArtistId)
         {
             using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
             {
@@ -251,7 +251,7 @@ namespace DatabaseManager.Database
             return -1;
         }
 
-        public static IList<Artist> GetArtistsNoAlbums()
+        public IList<Artist> GetArtistsNoAlbums()
         {
             IList<Artist> result = new List<Artist>();
             var collaborations = GetAllCollaborations();
