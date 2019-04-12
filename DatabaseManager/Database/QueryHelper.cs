@@ -13,7 +13,7 @@ namespace DatabaseManager.Database
     {
         private IDictionary<int, Album> m_Albums;
         private IDictionary<int, Artist> m_Artists;
-        private IDictionary<int, int> m_Collaborations;
+        private IList<KeyValuePair<int, int>> m_Collaborations;
 
         public QueryHelper()
         {
@@ -22,15 +22,16 @@ namespace DatabaseManager.Database
             m_Collaborations = InitCollaborations();
         }
 
+        #region Initialization
         private IDictionary<int, Album> InitAlbums()
         {
-            if(!File.Exists(DB_Constants.DB_Album_Directory))
+            if(!File.Exists(DB_Constants.DB_Album_Path))
             {
                 return null;
             }
 
             IDictionary<int, Album> result = new Dictionary<int, Album>();
-            var reader = new StreamReader(DB_Constants.DB_Album_Directory);
+            var reader = new StreamReader(DB_Constants.DB_Album_Path);
             string line;
             while((line = reader.ReadLine()) != null)
             {
@@ -42,13 +43,13 @@ namespace DatabaseManager.Database
 
         private IDictionary<int, Artist> InitArtists()
         {
-            if (!File.Exists(DB_Constants.DB_Artist_Directory))
+            if (!File.Exists(DB_Constants.DB_Artist_Path))
             {
                 return null;
             }
 
             IDictionary<int, Artist> result = new Dictionary<int, Artist>();
-            var reader = new StreamReader(DB_Constants.DB_Artist_Directory);
+            var reader = new StreamReader(DB_Constants.DB_Artist_Path);
             string line;
             while((line = reader.ReadLine()) != null)
             {
@@ -58,60 +59,33 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        private IDictionary<int, int> InitCollaborations()
+        private IList<KeyValuePair<int, int>> InitCollaborations()
         {
-            if (!File.Exists(DB_Constants.DB_Collaboration_Directory))
+            if (!File.Exists(DB_Constants.DB_Collaboration_Path))
             {
                 return null;
             }
 
-            IDictionary<int, int> result = new Dictionary<int, int>();
-            var reader = new StreamReader(DB_Constants.DB_Collaboration_Directory);
+            IList<KeyValuePair<int, int>> result = new List<KeyValuePair<int, int>>();
+            var reader = new StreamReader(DB_Constants.DB_Collaboration_Path);
             string line;
             while((line = reader.ReadLine()) != null)
             {
                 var collabo = JsonConvert.DeserializeObject<Collaboration>(line);
-                result.Add(collabo.ArtistId, collabo.AlbumId);
+                result.Add(new KeyValuePair<int, int>(collabo.ArtistId, collabo.AlbumId));
             }
             return result;
         }
+        #endregion
 
         public IList<Artist> GetAllArtists()
         {
-            if(!File.Exists(DB_Constants.DB_Artist_Path))
-            {
-                return null;
-            }
-
-            IList<Artist> result = new List<Artist>();
-            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    result.Add(JsonConvert.DeserializeObject<Artist>(line));
-                }
-            }
-            return result;
+            return m_Artists.Values.ToList();
         }
 
         public IList<Album> GetAllAlbums()
         {
-            if (!File.Exists(DB_Constants.DB_Album_Path))
-            {
-                return null;
-            }
-
-            IList<Album> result = new List<Album>();
-            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    result.Add(JsonConvert.DeserializeObject<Album>(line));
-                }
-            }
-            return result;
+            return m_Albums.Values.ToList();
         }
 
 
@@ -136,34 +110,20 @@ namespace DatabaseManager.Database
 
         public Artist GetArtistById(int p_ArtistId)
         {
-            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
+            Artist result;
+            if (m_Artists.TryGetValue(p_ArtistId, out result))
             {
-                string line;
-                while((line = reader.ReadLine()) != null)
-                {
-                    var artist = JsonConvert.DeserializeObject<Artist>(line);
-                    if(artist.Id == p_ArtistId)
-                    {
-                        return artist;
-                    }
-                }
+                return result;
             }
             return null;
         }
 
         public Album GetAlbumById(int p_AlbumId)
         {
-            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
+            Album result;
+            if (m_Albums.TryGetValue(p_AlbumId, out result))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    var album = JsonConvert.DeserializeObject<Album>(line);
-                    if (album.Id == p_AlbumId)
-                    {
-                        return album;
-                    }
-                }
+                return result;
             }
             return null;
         }
