@@ -14,6 +14,9 @@ namespace DatabaseManager.Database
         private IDictionary<int, Album> m_Albums;
         private IDictionary<int, Artist> m_Artists;
         private IList<KeyValuePair<int, int>> m_Collaborations;
+        private DateTime m_ArtistModified;
+        private DateTime m_AlbumModified;
+        private DateTime m_CollaboModified;
 
         public QueryHelper()
         {
@@ -38,6 +41,7 @@ namespace DatabaseManager.Database
                 var album = JsonConvert.DeserializeObject<Album>(line);
                 result.Add(album.Id, album);
             }
+            m_AlbumModified = File.GetLastWriteTime(DB_Constants.DB_Album_Path);
             return result;
         }
 
@@ -56,6 +60,7 @@ namespace DatabaseManager.Database
                 var artist = JsonConvert.DeserializeObject<Artist>(line);
                 result.Add(artist.Id, artist);
             }
+            m_ArtistModified = File.GetLastWriteTime(DB_Constants.DB_Artist_Path);
             return result;
         }
 
@@ -74,6 +79,7 @@ namespace DatabaseManager.Database
                 var collabo = JsonConvert.DeserializeObject<Collaboration>(line);
                 result.Add(new KeyValuePair<int, int>(collabo.ArtistId, collabo.AlbumId));
             }
+            m_CollaboModified = File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path);
             return result;
         }
         #endregion
