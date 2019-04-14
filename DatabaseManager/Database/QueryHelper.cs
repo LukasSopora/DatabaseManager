@@ -82,6 +82,33 @@ namespace DatabaseManager.Database
             m_CollaboModified = File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path);
             return result;
         }
+
+        private void CheckUpdateArtistResources()
+        {
+            if(File.GetLastWriteTime(DB_Constants.DB_Artist_Path) == m_ArtistModified)
+            {
+                return;
+            }
+            m_Artists = InitArtists();
+        }
+
+        private void CkeckUpdateAlbumResources()
+        {
+            if (File.GetLastWriteTime(DB_Constants.DB_Album_Path) == m_AlbumModified)
+            {
+                return;
+            }
+            m_Albums = InitAlbums();
+        }
+
+        private void CheckUpdateCollaboResources()
+        {
+            if (File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path) == m_CollaboModified)
+            {
+                return;
+            }
+            m_Collaborations = InitCollaborations();
+        }
         #endregion
 
         public IList<Artist> GetAllArtists()
