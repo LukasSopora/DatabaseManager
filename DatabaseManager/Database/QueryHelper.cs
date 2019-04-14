@@ -113,11 +113,13 @@ namespace DatabaseManager.Database
 
         public IList<Artist> GetAllArtists()
         {
+            CheckUpdateArtistResources();
             return m_Artists.Values.ToList();
         }
 
         public IList<Album> GetAllAlbums()
         {
+            CkeckUpdateAlbumResources();
             return m_Albums.Values.ToList();
         }
 

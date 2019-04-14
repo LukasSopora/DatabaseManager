@@ -38,6 +38,18 @@ namespace DatabaseManagerTests
         }
 
         [TestMethod]
+        public void CheckUpdateResources()
+        {
+            DatabaseHelper.InitDataBase();
+            CheckQueryHelper();
+
+            m_QueryHelper.GetAllArtists();
+
+            DatabaseHelper.InitDataBase();
+            m_QueryHelper.GetAllArtists();
+        }
+
+        [TestMethod]
         public void GetAllAlbums()
         {
             CheckQueryHelper();
