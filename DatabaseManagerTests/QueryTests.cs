@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using DatabaseManager.Database;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -90,22 +91,7 @@ namespace DatabaseManagerTests
         }
 
         [TestMethod]
-        public void TestLockDBFIles()
-        {
-            CheckQueryHelper();
-
-            m_QueryHelper.LockAlbums();
-            m_QueryHelper.LockArtists();
-            m_QueryHelper.LockCollaborations();
-
-            try
-            {
-                m_QueryHelper.LockAlbums();
-                m_QueryHelper.LockArtists();
-                m_QueryHelper.LockCollaborations();
-            }
-            catch (Exception) { }
-        }
+        
 
         //[TestMethod]
         //public void GetCollaborationByArtistId()

@@ -134,7 +134,7 @@ namespace DatabaseManager.Database
             return File.Exists(DB_Constants.DB_Collaboration_Path_Locked);
         }
 
-        public void LockAlbums()
+        private void LockAlbums()
         {
             if(CheckAlbumsLocked())
             {
@@ -143,7 +143,7 @@ namespace DatabaseManager.Database
 
             File.Copy(DB_Constants.DB_Album_Path, DB_Constants.DB_Album_Path_Locked);
         }
-        public void LockArtists()
+        private void LockArtists()
         {
             if (CheckArtistsLocked())
             {
@@ -152,7 +152,7 @@ namespace DatabaseManager.Database
 
             File.Copy(DB_Constants.DB_Artist_Path, DB_Constants.DB_Artist_Path_Locked);
         }
-        public void LockCollaborations()
+        private void LockCollaborations()
         {
             if (CheckCollaborationsLocked())
             {
@@ -160,6 +160,37 @@ namespace DatabaseManager.Database
             }
 
             File.Copy(DB_Constants.DB_Collaboration_Path, DB_Constants.DB_Collaboration_Path_Locked);
+        }
+
+        private void UnlockAlbums()
+        {
+            if(!CheckAlbumsLocked())
+            {
+                throw new Exception("Albums already unlocked");
+            }
+
+            File.Copy(DB_Constants.DB_Album_Path_Locked, DB_Constants.DB_Album_Path, true);
+            File.Delete(DB_Constants.DB_Album_Path_Locked);
+        }
+        private void UnlockArtists()
+        {
+            if (!CheckArtistsLocked())
+            {
+                throw new Exception("Artists already unlocked");
+            }
+
+            File.Copy(DB_Constants.DB_Artist_Path_Locked, DB_Constants.DB_Artist_Path, true);
+            File.Delete(DB_Constants.DB_Artist_Path_Locked);
+        }
+        private void UnlockCollaborations()
+        {
+            if (!CheckCollaborationsLocked())
+            {
+                throw new Exception("Collaborations already unlocked");
+            }
+
+            File.Copy(DB_Constants.DB_Collaboration_Path_Locked, DB_Constants.DB_Collaboration_Path, true);
+            File.Delete(DB_Constants.DB_Collaboration_Path_Locked);
         }
         #endregion
 
