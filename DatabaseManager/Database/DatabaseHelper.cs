@@ -37,6 +37,20 @@ namespace DatabaseManager.Database
         {
             InitDBDirectories();
             InitDataBaseFiles();
+            ClearDBDirectory();
+        }
+
+        private static void ClearDBDirectory()
+        {
+            foreach (var file in Directory.GetFiles(DB_Constants.DB_DataBase_Directory, "*", SearchOption.AllDirectories))
+            {
+                if (!file.Equals(GetWinFileName(DB_Constants.DB_Artist_Path)) &&
+                    !file.Equals(GetWinFileName(DB_Constants.DB_Album_Path)) &&
+                    !file.Equals(GetWinFileName(DB_Constants.DB_Collaboration_Path)))
+                {
+                    File.Delete(file);
+                }
+            }
         }
 
         private static void InitDataBaseFiles()
@@ -175,6 +189,11 @@ namespace DatabaseManager.Database
                 }
             }
             return true;
+        }
+
+        private static string GetWinFileName(string p_Filename)
+        {
+            return p_Filename.Replace("//", @"\");
         }
     }
 }

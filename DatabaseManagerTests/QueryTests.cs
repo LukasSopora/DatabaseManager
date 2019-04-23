@@ -58,7 +58,7 @@ namespace DatabaseManagerTests
         }
 
         [TestMethod]
-        public void getallcollaborations()
+        public void GetAllCollaborations()
         {
             CheckQueryHelper();
 
@@ -87,6 +87,24 @@ namespace DatabaseManagerTests
             m_QueryHelper.GetAlbumById(3);
             m_QueryHelper.GetAlbumById(4);
             m_QueryHelper.GetAlbumById(5);
+        }
+
+        [TestMethod]
+        public void TestLockDBFIles()
+        {
+            CheckQueryHelper();
+
+            m_QueryHelper.LockAlbums();
+            m_QueryHelper.LockArtists();
+            m_QueryHelper.LockCollaborations();
+
+            try
+            {
+                m_QueryHelper.LockAlbums();
+                m_QueryHelper.LockArtists();
+                m_QueryHelper.LockCollaborations();
+            }
+            catch (Exception) { }
         }
 
         //[TestMethod]

@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="DatabaseManagerTests.QueryTests.InitDB" /><Add Test="DatabaseManagerTests.QueryTests.GetAllArtists" /><Add Test="DatabaseManagerTests.QueryTests.GetAllAlbums" /><Add Test="DatabaseManagerTests.QueryTests.GetAllCollaborations" /><Add Test="DatabaseManagerTests.QueryTests.InitQueryHelper" /></Playlist>

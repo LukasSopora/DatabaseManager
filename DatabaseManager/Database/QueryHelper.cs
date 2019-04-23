@@ -121,9 +121,45 @@ namespace DatabaseManager.Database
         #endregion
 
         #region Locking
-        private void LockAlbums()
+        private bool CheckAlbumsLocked()
         {
+            return File.Exists(DB_Constants.DB_Album_Path_Locked);
+        }
+        private bool CheckArtistsLocked()
+        {
+            return File.Exists(DB_Constants.DB_Artist_Path_Locked);
+        }
+        private bool CheckCollaborationsLocked()
+        {
+            return File.Exists(DB_Constants.DB_Collaboration_Path_Locked);
+        }
 
+        public void LockAlbums()
+        {
+            if(CheckAlbumsLocked())
+            {
+                throw new Exception("Albums already locked");
+            }
+
+            File.Copy(DB_Constants.DB_Album_Path, DB_Constants.DB_Album_Path_Locked);
+        }
+        public void LockArtists()
+        {
+            if (CheckArtistsLocked())
+            {
+                throw new Exception("Artists already locked");
+            }
+
+            File.Copy(DB_Constants.DB_Artist_Path, DB_Constants.DB_Artist_Path_Locked);
+        }
+        public void LockCollaborations()
+        {
+            if (CheckCollaborationsLocked())
+            {
+                throw new Exception("Collaborations already locked");
+            }
+
+            File.Copy(DB_Constants.DB_Collaboration_Path, DB_Constants.DB_Collaboration_Path_Locked);
         }
         #endregion
 
