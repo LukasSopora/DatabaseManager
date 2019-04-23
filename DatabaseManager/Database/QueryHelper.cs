@@ -34,12 +34,15 @@ namespace DatabaseManager.Database
             }
 
             IDictionary<int, Album> result = new Dictionary<int, Album>();
-            var reader = new StreamReader(DB_Constants.DB_Album_Path);
-            string line;
-            while((line = reader.ReadLine()) != null)
+            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
             {
-                var album = JsonConvert.DeserializeObject<Album>(line);
-                result.Add(album.Id, album);
+                string line;
+                Album album;
+                while((line = reader.ReadLine()) != null)
+                {
+                    album = JsonConvert.DeserializeObject<Album>(line);
+                    result.Add(album.Id, album);
+                }
             }
             m_AlbumModified = File.GetLastWriteTime(DB_Constants.DB_Album_Path);
             return result;
@@ -53,12 +56,15 @@ namespace DatabaseManager.Database
             }
 
             IDictionary<int, Artist> result = new Dictionary<int, Artist>();
-            var reader = new StreamReader(DB_Constants.DB_Artist_Path);
-            string line;
-            while((line = reader.ReadLine()) != null)
+            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
             {
-                var artist = JsonConvert.DeserializeObject<Artist>(line);
-                result.Add(artist.Id, artist);
+                string line;
+                Artist artist;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    artist = JsonConvert.DeserializeObject<Artist>(line);
+                    result.Add(artist.Id, artist);
+                }
             }
             m_ArtistModified = File.GetLastWriteTime(DB_Constants.DB_Artist_Path);
             return result;
@@ -72,12 +78,15 @@ namespace DatabaseManager.Database
             }
 
             IList<KeyValuePair<int, int>> result = new List<KeyValuePair<int, int>>();
-            var reader = new StreamReader(DB_Constants.DB_Collaboration_Path);
-            string line;
-            while((line = reader.ReadLine()) != null)
+            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
             {
-                var collabo = JsonConvert.DeserializeObject<Collaboration>(line);
-                result.Add(new KeyValuePair<int, int>(collabo.ArtistId, collabo.AlbumId));
+                string line;
+                Collaboration collaboration;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    collaboration = JsonConvert.DeserializeObject<Collaboration>(line);
+                    result.Add(new KeyValuePair<int, int>(collaboration.AlbumId, collaboration.ArtistId));
+                }
             }
             m_CollaboModified = File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path);
             return result;
@@ -108,6 +117,13 @@ namespace DatabaseManager.Database
                 return;
             }
             m_Collaborations = InitCollaborations();
+        }
+        #endregion
+
+        #region Locking
+        private void LockAlbums()
+        {
+
         }
         #endregion
 

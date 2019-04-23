@@ -123,17 +123,26 @@
   <data name="DB_Album_Path" xml:space="preserve">
     <value>Database//Album//album.json</value>
   </data>
+  <data name="DB_Album_Path_Locked" xml:space="preserve">
+    <value>Database//Album//album_lock.json</value>
+  </data>
   <data name="DB_Artist_Directory" xml:space="preserve">
     <value>Database//Artist</value>
   </data>
   <data name="DB_Artist_Path" xml:space="preserve">
     <value>Database//Artist//artist.json</value>
   </data>
+  <data name="DB_Artist_Path_Locked" xml:space="preserve">
+    <value>Database//Artist//artist_lock.json</value>
+  </data>
   <data name="DB_Collaboration_Directory" xml:space="preserve">
     <value>Database//Collaboration</value>
   </data>
   <data name="DB_Collaboration_Path" xml:space="preserve">
     <value>Database//Collaboration//collaboration.json</value>
+  </data>
+  <data name="DB_Collaboration_Path_Locked" xml:space="preserve">
+    <value>Database//Collaboration//collaboration_lock.json</value>
   </data>
   <data name="DB_DataBase_Directory" xml:space="preserve">
     <value>Database</value>

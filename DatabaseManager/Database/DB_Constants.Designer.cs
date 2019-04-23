@@ -79,6 +79,15 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database//Album//album_lock.json.
+        /// </summary>
+        internal static string DB_Album_Path_Locked {
+            get {
+                return ResourceManager.GetString("DB_Album_Path_Locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database//Artist.
         /// </summary>
         internal static string DB_Artist_Directory {
@@ -97,6 +106,15 @@ namespace DatabaseManager.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database//Artist//artist_lock.json.
+        /// </summary>
+        internal static string DB_Artist_Path_Locked {
+            get {
+                return ResourceManager.GetString("DB_Artist_Path_Locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database//Collaboration.
         /// </summary>
         internal static string DB_Collaboration_Directory {
@@ -111,6 +129,15 @@ namespace DatabaseManager.Database {
         internal static string DB_Collaboration_Path {
             get {
                 return ResourceManager.GetString("DB_Collaboration_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database//Collaboration//collaboration_lock.json.
+        /// </summary>
+        internal static string DB_Collaboration_Path_Locked {
+            get {
+                return ResourceManager.GetString("DB_Collaboration_Path_Locked", resourceCulture);
             }
         }
         
