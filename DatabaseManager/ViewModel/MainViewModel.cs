@@ -63,6 +63,7 @@ namespace DatabaseManager.ViewModel
         public MainViewModel()
         {
             DatabaseHelper.InitDataBase();
+            var queryHelper = new QueryHelper();
             InitalizeCommands();
         }
     }

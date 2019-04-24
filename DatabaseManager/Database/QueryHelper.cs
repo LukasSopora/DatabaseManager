@@ -13,6 +13,8 @@ namespace DatabaseManager.Database
     {
         private IDictionary<int, Album> m_Albums;
         private IDictionary<int, Artist> m_Artists;
+        private IDictionary<int, List<int>> m_ArtistCollaborations;
+        private IDictionary<int, List<int>> m_AlbumCollaborations;
         private IList<KeyValuePair<int, int>> m_Collaborations;
         private DateTime m_ArtistModified;
         private DateTime m_AlbumModified;
@@ -23,9 +25,52 @@ namespace DatabaseManager.Database
             m_Artists = InitArtists();
             m_Albums = InitAlbums();
             m_Collaborations = InitCollaborations();
+            InitCollaboration();
         }
 
         #region Initialization
+        private void InitCollaboration()
+        {
+            if (!File.Exists(DB_Constants.DB_Collaboration_Path))
+            {
+                return;
+            }
+
+            m_ArtistCollaborations = new Dictionary<int, List<int>>();
+            m_AlbumCollaborations = new Dictionary<int, List<int>>();
+
+            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
+            {
+                string line;
+                Collaboration collaboration;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    collaboration = JsonConvert.DeserializeObject<Collaboration>(line);
+
+                    //Add artist collaboration
+                    if(!m_ArtistCollaborations.ContainsKey(collaboration.ArtistId))
+                    {
+                        m_ArtistCollaborations.Add(collaboration.ArtistId, new List<int> { collaboration.AlbumId });
+                    }
+                    else
+                    {
+                        m_ArtistCollaborations[collaboration.ArtistId].Add(collaboration.AlbumId);
+                    }
+
+                    //Add album collaboration
+                    if(!m_AlbumCollaborations.ContainsKey(collaboration.AlbumId))
+                    {
+                        m_AlbumCollaborations.Add(collaboration.AlbumId, new List<int> { collaboration.ArtistId });
+                    }
+                    else
+                    {
+                        m_AlbumCollaborations[collaboration.AlbumId].Add(collaboration.ArtistId);
+                    }
+                }
+            }
+            m_CollaboModified = File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path);
+        }
+
         private IDictionary<int, Album> InitAlbums()
         {
             if(!File.Exists(DB_Constants.DB_Album_Path))
