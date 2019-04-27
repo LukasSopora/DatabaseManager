@@ -90,7 +90,6 @@ namespace DatabaseManagerTests
             m_QueryHelper.GetAlbumById(5);
         }
 
-        [TestMethod]
         
 
         //[TestMethod]

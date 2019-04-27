@@ -9,80 +9,49 @@
              Background="{DynamicResource MaterialDesignPaper}"
              TextElement.FontWeight="Medium"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="480" d:DesignWidth="720">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Button
+        <Expander
             Grid.Row="0" Grid.Column="0"
-            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-            Command="{Binding AllAlbumsFromArtist}">
-            All Albums from
-        </Button>
-        <ComboBox
-            Grid.Row="1" Grid.Column="0"
-            ItemsSource="{Binding Artists, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            SelectedItem="{Binding CurrentArtist, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button
-            Grid.Row="0" Grid.Column="1"
-            Style="{StaticResource MaterialDesignRaisedAccentButton}"   
-            Command="{Binding LatestAlbumCommand}">
-            Latest album from all artists
-        </Button>
-        <Button
-            Grid.Row="0" Grid.Column="2"
-            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-            Command="{Binding BandFormedCommand}">
-            When was ... formed?
-        </Button>
-        <ComboBox
-            Grid.Row="1" Grid.Column="2"
-            ItemsSource="{Binding Artists, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            SelectedItem="{Binding CurrentArtist, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button
-            Grid.Row="0" Grid.Column="3"
-            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-            Command="{Binding NoAlbumsCommand}">
-            Which bands got no album?
-        </Button>
+            Grid.RowSpan="2"
+            ExpandDirection="Right">
 
-        <DataGrid
-            Grid.Row="2" Grid.ColumnSpan="4"
-            ItemsSource="{Binding AlbumsFromArtist, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            AutoGenerateColumns="True"
-            CanUserAddRows="False" CanUserDeleteRows="False"
-            Visibility="{Binding AlbumsFromArtistVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Grid
+                Margin="0,20,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <TextBox
-            Grid.Row="2" Grid.ColumnSpan="4"
-            Text="{Binding LatestAlbumYear, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            HorizontalAlignment="Center"
-            FontSize="25" VerticalAlignment="Center"
-            Visibility="{Binding LatestAlbumYearVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <StackPanel Grid.Row="0">
+                    <Button
+                        Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
+                        Command="{Binding InitDBCommand}"
+                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ButtonProgressAssist.Value="-1"
+                        materialDesign:ButtonProgressAssist.IsIndeterminate="True">
+                        <materialDesign:PackIcon
+                            Kind="ArrowRightDropCircle"
+                            Width="24"
+                            Height="24"/>
+                    </Button>
+                    <TextBlock Text="Init database"/>
+                </StackPanel>
 
-        <TextBox
-            Grid.Row="2" Grid.ColumnSpan="4"
-            Text="{Binding BandFormYear, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            HorizontalAlignment="Center"
-            FontSize="25" VerticalAlignment="Center"
-            Visibility="{Binding BandFormYearVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-
-        <DataGrid
-            Grid.Row="2" Grid.ColumnSpan="4"
-            ItemsSource="{Binding ArtistsNoAlbums, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-            AutoGenerateColumns="True"
-            CanUserAddRows="False" CanUserDeleteRows="False"
-            Visibility="{Binding ArtistsNoAlbumsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-
+            </Grid>
+        </Expander>
+        
     </Grid>
 </UserControl>

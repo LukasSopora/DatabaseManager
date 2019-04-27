@@ -10,15 +10,26 @@ using System.Text;
 using System.Threading.Tasks;
 using DatabaseManager;
 using DatabaseManager.Database;
+using System.Threading;
 
 namespace DatabaseManager.ViewModel
 {
     public class MainViewModel : BindableBase
     {
         #region props
+        private bool m_InitProgress = false;
+            
+        public bool InitProgress
+        {
+            get { return m_InitProgress; }
+            set { SetProperty(ref m_InitProgress, value); }
+        }
+
         #endregion
 
         #region Commands
+        public DelegateCommand InitDBCommand { get; private set; }
+
         public DelegateCommand AllAlbumsFromArtist { get; private set; }
         public DelegateCommand LatestAlbumCommand { get; private set; }
         public DelegateCommand BandFormedCommand { get; private set; }
@@ -26,6 +37,9 @@ namespace DatabaseManager.ViewModel
 
         private void InitalizeCommands()
         {
+            InitDBCommand = new DelegateCommand(OnInitDB);
+            RaisePropertyChanged(nameof(InitDBCommand));
+
             AllAlbumsFromArtist = new DelegateCommand(OnAllAlbumbsFromArtist);
             RaisePropertyChanged(nameof(AllAlbumsFromArtist));
 
@@ -37,6 +51,24 @@ namespace DatabaseManager.ViewModel
 
             NoAlbumsCommand = new DelegateCommand(OnNoAlbums);
             RaisePropertyChanged(nameof(NoAlbumsCommand));
+        }
+
+        private void OnInitDB()
+        {
+            InitProgress = true;
+            Thread t = new Thread(InitDBStart);
+            t.Start();
+        }
+
+        private void InitDBStart()
+        {
+            DatabaseHelper.InitDataBase();
+            InitDBEnd();
+        }
+
+        private void InitDBEnd()
+        {
+            InitProgress = false;
         }
 
         private void OnAllAlbumbsFromArtist()
@@ -62,8 +94,6 @@ namespace DatabaseManager.ViewModel
 
         public MainViewModel()
         {
-            DatabaseHelper.InitDataBase();
-            var queryHelper = new QueryHelper();
             InitalizeCommands();
         }
     }
