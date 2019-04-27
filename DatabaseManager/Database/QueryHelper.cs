@@ -12,7 +12,8 @@ namespace DatabaseManager.Database
     public class QueryHelper
     {
         private IDictionary<int, Album> m_Albums;
-        private IDictionary<int, Artist> m_Artists;
+        private IDictionary<int, Artist> m_ArtistsbyId;
+        private IDictionary<string, Artist> m_ArtistsByName;
         private IDictionary<int, List<int>> m_ArtistCollaborations;
         private IDictionary<int, List<int>> m_AlbumCollaborations;
         private IList<KeyValuePair<int, int>> m_Collaborations;
@@ -22,7 +23,7 @@ namespace DatabaseManager.Database
 
         public QueryHelper()
         {
-            m_Artists = InitArtists();
+            InitArtists();
             m_Albums = InitAlbums();
             m_Collaborations = InitCollaborations();
             InitCollaboration();
@@ -93,14 +94,16 @@ namespace DatabaseManager.Database
             return result;
         }
 
-        private IDictionary<int, Artist> InitArtists()
+        private void InitArtists()
         {
             if (!File.Exists(DB_Constants.DB_Artist_Path))
             {
-                return null;
+                return;
             }
 
-            IDictionary<int, Artist> result = new Dictionary<int, Artist>();
+            m_ArtistsbyId = new Dictionary<int, Artist>();
+            m_ArtistsByName = new Dictionary<string, Artist>();
+
             using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
             {
                 string line;
@@ -108,11 +111,11 @@ namespace DatabaseManager.Database
                 while ((line = reader.ReadLine()) != null)
                 {
                     artist = JsonConvert.DeserializeObject<Artist>(line);
-                    result.Add(artist.Id, artist);
+                    m_ArtistsbyId.Add(artist.Id, artist);
+                    m_ArtistsByName.Add(artist.Name, artist);
                 }
             }
             m_ArtistModified = File.GetLastWriteTime(DB_Constants.DB_Artist_Path);
-            return result;
         }
 
         private IList<KeyValuePair<int, int>> InitCollaborations()
@@ -143,7 +146,7 @@ namespace DatabaseManager.Database
             {
                 return;
             }
-            m_Artists = InitArtists();
+            InitArtists();
         }
 
         private void CkeckUpdateAlbumResources()
@@ -242,7 +245,7 @@ namespace DatabaseManager.Database
         public IList<Artist> GetAllArtists()
         {
             CheckUpdateArtistResources();
-            return m_Artists.Values.ToList();
+            return m_ArtistsbyId.Values.ToList();
         }
 
         public IList<Album> GetAllAlbums()
@@ -274,7 +277,7 @@ namespace DatabaseManager.Database
         public Artist GetArtistById(int p_ArtistId)
         {
             Artist result;
-            if (m_Artists.TryGetValue(p_ArtistId, out result))
+            if (m_ArtistsbyId.TryGetValue(p_ArtistId, out result))
             {
                 return result;
             }
