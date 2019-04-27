@@ -35,21 +35,36 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0">
+                <StackPanel Grid.Row="0" Margin="10">
                     <Button
                         Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
                         Command="{Binding InitDBCommand}"
-                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitDBProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ButtonProgressAssist.Value="-1"
                         materialDesign:ButtonProgressAssist.IsIndeterminate="True">
                         <materialDesign:PackIcon
-                            Kind="ArrowRightDropCircle"
-                            Width="24"
-                            Height="24"/>
+                            Kind="Database"
+                            Width="36"
+                            Height="36"/>
                     </Button>
                     <TextBlock Text="Init database"/>
                 </StackPanel>
 
+                <StackPanel Grid.Row="1" Margin="10">
+                    <Button
+                        Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
+                        Command="{Binding InitQueryCommand}"
+                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitQueryProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ButtonProgressAssist.Value="-1"
+                        materialDesign:ButtonProgressAssist.IsIndeterminate="True">
+                        <materialDesign:PackIcon
+                            Kind="ArrowRightDropCircle"
+                            Width="36"
+                            Height="36"/>
+                    </Button>
+                    <TextBlock Text="Init Queries"/>
+                </StackPanel>
+                
             </Grid>
         </Expander>
         

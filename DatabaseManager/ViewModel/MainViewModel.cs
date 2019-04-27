@@ -17,18 +17,28 @@ namespace DatabaseManager.ViewModel
     public class MainViewModel : BindableBase
     {
         #region props
-        private bool m_InitProgress = false;
-            
-        public bool InitProgress
+        private bool m_InitDBProgress = false;
+        private bool m_InitQueryProgress = false;
+        private QueryHelper m_QueryHelper;
+
+        public bool InitQueryProgress
         {
-            get { return m_InitProgress; }
-            set { SetProperty(ref m_InitProgress, value); }
+            get { return m_InitQueryProgress; }
+            set { SetProperty(ref m_InitQueryProgress, value); }
+        }
+
+
+        public bool InitDBProgress
+        {
+            get { return m_InitDBProgress; }
+            set { SetProperty(ref m_InitDBProgress, value); }
         }
 
         #endregion
 
         #region Commands
         public DelegateCommand InitDBCommand { get; private set; }
+        public DelegateCommand InitQueryCommand { get; private set; }
 
         public DelegateCommand AllAlbumsFromArtist { get; private set; }
         public DelegateCommand LatestAlbumCommand { get; private set; }
@@ -39,6 +49,9 @@ namespace DatabaseManager.ViewModel
         {
             InitDBCommand = new DelegateCommand(OnInitDB);
             RaisePropertyChanged(nameof(InitDBCommand));
+
+            InitQueryCommand = new DelegateCommand(OnInitQuery);
+            RaisePropertyChanged(nameof(InitQueryCommand));
 
             AllAlbumsFromArtist = new DelegateCommand(OnAllAlbumbsFromArtist);
             RaisePropertyChanged(nameof(AllAlbumsFromArtist));
@@ -53,9 +66,27 @@ namespace DatabaseManager.ViewModel
             RaisePropertyChanged(nameof(NoAlbumsCommand));
         }
 
+        private void OnInitQuery()
+        {
+            InitQueryProgress = true;
+            Thread t = new Thread(OnInitQueryStart);
+            t.Start();
+        }
+
+        private void OnInitQueryStart()
+        {
+            m_QueryHelper = new QueryHelper();
+            InitQueryEnd();
+        }
+
+        private void InitQueryEnd()
+        {
+            InitQueryProgress = false;
+        }
+
         private void OnInitDB()
         {
-            InitProgress = true;
+            InitDBProgress = true;
             Thread t = new Thread(InitDBStart);
             t.Start();
         }
@@ -68,7 +99,7 @@ namespace DatabaseManager.ViewModel
 
         private void InitDBEnd()
         {
-            InitProgress = false;
+            InitDBProgress = false;
         }
 
         private void OnAllAlbumbsFromArtist()
