@@ -22,6 +22,7 @@
         </Grid.ColumnDefinitions>
 
         <Expander
+            IsExpanded="True"
             Grid.Row="0" Grid.Column="0"
             Grid.RowSpan="2"
             ExpandDirection="Right">
@@ -35,36 +36,56 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Margin="10">
-                    <Button
+                <DockPanel Grid.Row="0" Margin="10">
+                    <StackPanel>
+                        <Button
                         Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
                         Command="{Binding InitDBCommand}"
                         materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitDBProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ButtonProgressAssist.Value="-1"
                         materialDesign:ButtonProgressAssist.IsIndeterminate="True">
-                        <materialDesign:PackIcon
+                            <materialDesign:PackIcon
                             Kind="Database"
                             Width="36"
                             Height="36"/>
-                    </Button>
-                    <TextBlock Text="Init database"/>
-                </StackPanel>
+                        </Button>
+                        <TextBlock Text="Init database"/>
+                    </StackPanel>
 
-                <StackPanel Grid.Row="1" Margin="10">
-                    <Button
+                    <StackPanel Margin="15"
+                    Visibility="{Binding InitDBFinished, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="Time elapsed [s:ms] :"/>
+                        <TextBox 
+                        Text="{Binding InitDBDuration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat=ss\\:fff}" 
+                        IsReadOnly="True"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <DockPanel Grid.Row="1" Margin="10">
+                    <StackPanel>
+                        <Button
                         Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
                         Command="{Binding InitQueryCommand}"
                         materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitQueryProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ButtonProgressAssist.Value="-1"
                         materialDesign:ButtonProgressAssist.IsIndeterminate="True">
-                        <materialDesign:PackIcon
+                            <materialDesign:PackIcon
                             Kind="ArrowRightDropCircle"
                             Width="36"
                             Height="36"/>
-                    </Button>
-                    <TextBlock Text="Init Queries"/>
-                </StackPanel>
-                
+                        </Button>
+                        <TextBlock Text="Init Queries"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="15"
+                    Visibility="{Binding InitQueryFinished, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="Time elapsed [s:ms] :"/>
+                        <TextBox 
+                        Text="{Binding InitQueryDuration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat=ss\\:fff}" 
+                        IsReadOnly="True"/>
+                    </StackPanel>
+                </DockPanel>
+
             </Grid>
         </Expander>
         

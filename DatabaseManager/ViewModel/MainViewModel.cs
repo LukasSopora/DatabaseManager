@@ -19,7 +19,37 @@ namespace DatabaseManager.ViewModel
         #region props
         private bool m_InitDBProgress = false;
         private bool m_InitQueryProgress = false;
+        private bool m_InitDBFinished = false;
+        private bool m_InitQueryFinished = false;
+
         private QueryHelper m_QueryHelper;
+
+        private TimeSpan m_InitDBDuration;
+        private TimeSpan m_InitQueryDuration;
+
+        public bool InitQueryFinished
+        {
+            get { return m_InitQueryFinished; }
+            set { SetProperty(ref m_InitQueryFinished, value); }
+        }
+
+        public bool InitDBFinished
+        {
+            get { return m_InitDBFinished; }
+            set { SetProperty(ref m_InitDBFinished, value); }
+        }
+
+        public TimeSpan InitQueryDuration
+        {
+            get { return m_InitQueryDuration; }
+            set { SetProperty(ref m_InitQueryDuration, value); }
+        }
+
+        public TimeSpan InitDBDuration
+        {
+            get { return m_InitDBDuration; }
+            set { SetProperty(ref m_InitDBDuration, value); }
+        }
 
         public bool InitQueryProgress
         {
@@ -68,38 +98,46 @@ namespace DatabaseManager.ViewModel
 
         private void OnInitQuery()
         {
-            InitQueryProgress = true;
             Thread t = new Thread(OnInitQueryStart);
             t.Start();
         }
 
         private void OnInitQueryStart()
         {
+            InitQueryProgress = true;
+            InitQueryFinished = false;
+            var initQueryProgressStart = DateTime.Now;
             m_QueryHelper = new QueryHelper();
             InitQueryEnd();
+            InitQueryDuration = DateTime.Now - initQueryProgressStart;
         }
 
         private void InitQueryEnd()
         {
             InitQueryProgress = false;
+            InitQueryFinished = true;
         }
 
         private void OnInitDB()
         {
-            InitDBProgress = true;
             Thread t = new Thread(InitDBStart);
             t.Start();
         }
 
         private void InitDBStart()
         {
+            InitDBProgress = true;
+            InitDBFinished = false;
+            var initDBProgressStart = DateTime.Now;
             DatabaseHelper.InitDataBase();
             InitDBEnd();
+            InitDBDuration = DateTime.Now - initDBProgressStart;
         }
 
         private void InitDBEnd()
         {
             InitDBProgress = false;
+            InitDBFinished = true;
         }
 
         private void OnAllAlbumbsFromArtist()
