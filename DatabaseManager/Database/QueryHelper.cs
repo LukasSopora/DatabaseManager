@@ -242,19 +242,54 @@ namespace DatabaseManager.Database
         }
         #endregion
 
+        #region CRUD
+        #region Artist
         public IList<Artist> GetAllArtists()
         {
             CheckUpdateArtistResources();
             return m_ArtistsbyId.Values.ToList();
         }
 
+        public Artist GetArtistById(int p_ArtistId)
+        {
+            Artist result;
+            if (m_ArtistsbyId.TryGetValue(p_ArtistId, out result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        public Artist GetArtistByName(string p_ArtistName)
+        {
+            Artist result;
+            if(m_ArtistsByName.TryGetValue(p_ArtistName, out result))
+            {
+                return result;
+            }
+            return null;
+        }
+        #endregion
+
+        #region Album
         public IList<Album> GetAllAlbums()
         {
             CkeckUpdateAlbumResources();
             return m_Albums.Values.ToList();
         }
 
+        public Album GetAlbumById(int p_AlbumId)
+        {
+            Album result;
+            if (m_Albums.TryGetValue(p_AlbumId, out result))
+            {
+                return result;
+            }
+            return null;
+        }
+        #endregion
 
+        #region Collaboration
         public IList<Collaboration> GetAllCollaborations()
         {
             if (!File.Exists(DB_Constants.DB_Collaboration_Path))
@@ -273,26 +308,9 @@ namespace DatabaseManager.Database
             }
             return result;
         }
+        #endregion
+        #endregion
 
-        public Artist GetArtistById(int p_ArtistId)
-        {
-            Artist result;
-            if (m_ArtistsbyId.TryGetValue(p_ArtistId, out result))
-            {
-                return result;
-            }
-            return null;
-        }
-
-        public Album GetAlbumById(int p_AlbumId)
-        {
-            Album result;
-            if (m_Albums.TryGetValue(p_AlbumId, out result))
-            {
-                return result;
-            }
-            return null;
-        }
 
         public IList<Collaboration> GetCollaborationByArtistId(int p_ArtistId)
         {
