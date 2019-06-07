@@ -14,7 +14,7 @@ namespace DatabaseManager.Database
     {
         private IDictionary<int, Album> m_Albums;
 
-        private IDictionary<int, Artist> m_ArtistsbyId;
+        private IDictionary<int, Artist> m_ArtistsById;
         private IDictionary<string, Artist> m_ArtistsByName;
 
         private IDictionary<int, List<int>> m_ArtistCollaborations;
@@ -102,7 +102,7 @@ namespace DatabaseManager.Database
                 return;
             }
 
-            m_ArtistsbyId = new Dictionary<int, Artist>();
+            m_ArtistsById = new Dictionary<int, Artist>();
             m_ArtistsByName = new Dictionary<string, Artist>();
 
             using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
@@ -112,7 +112,7 @@ namespace DatabaseManager.Database
                 while ((line = reader.ReadLine()) != null)
                 {
                     artist = JsonConvert.DeserializeObject<Artist>(line);
-                    m_ArtistsbyId.Add(artist.Id, artist);
+                    m_ArtistsById.Add(artist.Id, artist);
                     m_ArtistsByName.Add(artist.Name, artist);
                 }
             }
@@ -245,18 +245,18 @@ namespace DatabaseManager.Database
             LockArtists();
             if(p_Artist.Id == 0) //Id not initialized
             {
-                p_Artist.Id = m_ArtistsbyId.Keys.Max();
+                p_Artist.Id = m_ArtistsById.Keys.Max();
             }
             else //Id initialized --> check if key already exists
             {
-                if(m_ArtistsbyId.ContainsKey(p_Artist.Id))
+                if(m_ArtistsById.ContainsKey(p_Artist.Id))
                 {
                     UnlockArtists();
                     return false;
                 }
             }
 
-            m_ArtistsbyId.Add(p_Artist.Id, p_Artist);
+            m_ArtistsById.Add(p_Artist.Id, p_Artist);
             m_ArtistsByName.Add(p_Artist.Name, p_Artist);
 
             UnlockArtists();
@@ -267,14 +267,14 @@ namespace DatabaseManager.Database
         public IList<Artist> ReadAllArtist()
         {
             CheckUpdateArtistResources();
-            return m_ArtistsbyId.Values.ToList();
+            return m_ArtistsById.Values.ToList();
         }
 
         public Artist ReadArtistById(int p_ArtistId)
         {
             CheckUpdateArtistResources();
             Artist result;
-            if (m_ArtistsbyId.TryGetValue(p_ArtistId, out result))
+            if (m_ArtistsById.TryGetValue(p_ArtistId, out result))
             {
                 return result;
             }
@@ -295,13 +295,104 @@ namespace DatabaseManager.Database
         public IList<Artist> ReadArtistByCountry(string p_Country)
         {
             CheckUpdateArtistResources();
-            return m_ArtistsbyId.Values.Where(x => x.Country.Equals(p_Country)).ToList();
+            return m_ArtistsById.Values.Where(x => x.Country.Equals(p_Country)).ToList();
         }
 
         public IList<Artist> ReadArtistByYear(int p_Year)
         {
             CheckUpdateArtistResources();
-            return m_ArtistsbyId.Values.Where(x => x.Year.Equals(p_Year)).ToList();
+            return m_ArtistsById.Values.Where(x => x.Year.Equals(p_Year)).ToList();
+        }
+
+        public bool UpdateArtist(int p_ArtistId, Artist p_Artist)
+        {
+            CheckUpdateArtistResources();
+
+            if (!m_ArtistsById.ContainsKey(p_ArtistId) || p_Artist.Id != p_ArtistId)
+            {
+                return false;
+            }
+
+            if (CheckArtistsLocked())
+            {
+                int counter = 0;
+                while (CheckArtistsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockArtists();
+            string name = m_ArtistsById[p_ArtistId].Name;
+            m_ArtistsById[p_ArtistId] = p_Artist;
+            m_ArtistsByName[name] = p_Artist;
+            UnlockArtists();
+
+            return true;
+        }
+
+        public bool UpdateArtist(string p_ArtistName, Artist p_Artist)
+        {
+            CheckUpdateArtistResources();
+
+            if (!m_ArtistsByName.ContainsKey(p_ArtistName) || p_Artist.Name != p_ArtistName)
+            {
+                return false;
+            }
+
+            if (CheckArtistsLocked())
+            {
+                int counter = 0;
+                while (CheckArtistsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockArtists();
+            int id = m_ArtistsByName[p_ArtistName].Id;
+            m_ArtistsByName[p_ArtistName] = p_Artist;
+            m_ArtistsById[id] = p_Artist;
+            UnlockArtists();
+
+            return true;
+        }
+
+        public bool DeleteArtist(int p_ArtistId)
+        {
+            CheckUpdateArtistResources();
+
+            if (CheckArtistsLocked())
+            {
+                int counter = 0;
+                while (CheckArtistsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockArtists();
+            string name = m_ArtistsById[p_ArtistId].Name;
+            m_ArtistsById.Remove(p_ArtistId);
+            m_ArtistsByName.Remove(name);
+            //TODO Delete Collaborations
+            UnlockArtists();
+            return true;
         }
         #endregion
 
