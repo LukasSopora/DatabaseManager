@@ -8,7 +8,7 @@ namespace DatabaseManager.Model
 {
     public class Artist
     {
-        private int m_Id;
+        private int m_Id = 0;
         private string m_Name;
         private int m_Year;
         private string m_Country;

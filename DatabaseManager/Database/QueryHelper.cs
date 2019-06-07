@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DatabaseManager.Database
@@ -12,11 +13,13 @@ namespace DatabaseManager.Database
     public class QueryHelper
     {
         private IDictionary<int, Album> m_Albums;
+
         private IDictionary<int, Artist> m_ArtistsbyId;
         private IDictionary<string, Artist> m_ArtistsByName;
+
         private IDictionary<int, List<int>> m_ArtistCollaborations;
         private IDictionary<int, List<int>> m_AlbumCollaborations;
-        private IList<KeyValuePair<int, int>> m_Collaborations;
+
         private DateTime m_ArtistModified;
         private DateTime m_AlbumModified;
         private DateTime m_CollaboModified;
@@ -24,13 +27,12 @@ namespace DatabaseManager.Database
         public QueryHelper()
         {
             InitArtists();
-            m_Albums = InitAlbums();
-            m_Collaborations = InitCollaborations();
-            InitCollaboration();
+            InitAlbums();
+            InitCollaborations();
         }
 
         #region Initialization
-        private void InitCollaboration()
+        private void InitCollaborations()
         {
             if (!File.Exists(DB_Constants.DB_Collaboration_Path))
             {
@@ -72,14 +74,14 @@ namespace DatabaseManager.Database
             m_CollaboModified = File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path);
         }
 
-        private IDictionary<int, Album> InitAlbums()
+        private void InitAlbums()
         {
             if(!File.Exists(DB_Constants.DB_Album_Path))
             {
-                return null;
+                return;
             }
 
-            IDictionary<int, Album> result = new Dictionary<int, Album>();
+            m_Albums = new Dictionary<int, Album>();
             using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
             {
                 string line;
@@ -87,11 +89,10 @@ namespace DatabaseManager.Database
                 while((line = reader.ReadLine()) != null)
                 {
                     album = JsonConvert.DeserializeObject<Album>(line);
-                    result.Add(album.Id, album);
+                    m_Albums.Add(album.Id, album);
                 }
             }
             m_AlbumModified = File.GetLastWriteTime(DB_Constants.DB_Album_Path);
-            return result;
         }
 
         private void InitArtists()
@@ -117,29 +118,9 @@ namespace DatabaseManager.Database
             }
             m_ArtistModified = File.GetLastWriteTime(DB_Constants.DB_Artist_Path);
         }
+        #endregion
 
-        private IList<KeyValuePair<int, int>> InitCollaborations()
-        {
-            if (!File.Exists(DB_Constants.DB_Collaboration_Path))
-            {
-                return null;
-            }
-
-            IList<KeyValuePair<int, int>> result = new List<KeyValuePair<int, int>>();
-            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
-            {
-                string line;
-                Collaboration collaboration;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    collaboration = JsonConvert.DeserializeObject<Collaboration>(line);
-                    result.Add(new KeyValuePair<int, int>(collaboration.AlbumId, collaboration.ArtistId));
-                }
-            }
-            m_CollaboModified = File.GetLastWriteTime(DB_Constants.DB_Collaboration_Path);
-            return result;
-        }
-
+        #region Check and Update Values
         private void CheckUpdateArtistResources()
         {
             if(File.GetLastWriteTime(DB_Constants.DB_Artist_Path) == m_ArtistModified)
@@ -155,7 +136,7 @@ namespace DatabaseManager.Database
             {
                 return;
             }
-            m_Albums = InitAlbums();
+            InitAlbums();
         }
 
         private void CheckUpdateCollaboResources()
@@ -164,7 +145,7 @@ namespace DatabaseManager.Database
             {
                 return;
             }
-            m_Collaborations = InitCollaborations();
+            InitCollaborations();
         }
         #endregion
 
@@ -242,16 +223,56 @@ namespace DatabaseManager.Database
         }
         #endregion
 
-        #region CRUD
-        #region Artist
-        public IList<Artist> GetAllArtists()
+        #region CRUD Artist
+        public bool CreateArtist(Artist p_Artist)
+        {
+            CheckUpdateArtistResources();
+
+            if(CheckArtistsLocked())
+            {
+                int counter = 0;
+                while(CheckArtistsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if(counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockArtists();
+            if(p_Artist.Id == 0) //Id not initialized
+            {
+                p_Artist.Id = m_ArtistsbyId.Keys.Max();
+            }
+            else //Id initialized --> check if key already exists
+            {
+                if(m_ArtistsbyId.ContainsKey(p_Artist.Id))
+                {
+                    UnlockArtists();
+                    return false;
+                }
+            }
+
+            m_ArtistsbyId.Add(p_Artist.Id, p_Artist);
+            m_ArtistsByName.Add(p_Artist.Name, p_Artist);
+
+            UnlockArtists();
+
+            return true;
+        }
+
+        public IList<Artist> ReadAllArtist()
         {
             CheckUpdateArtistResources();
             return m_ArtistsbyId.Values.ToList();
         }
 
-        public Artist GetArtistById(int p_ArtistId)
+        public Artist ReadArtistById(int p_ArtistId)
         {
+            CheckUpdateArtistResources();
             Artist result;
             if (m_ArtistsbyId.TryGetValue(p_ArtistId, out result))
             {
@@ -260,8 +281,9 @@ namespace DatabaseManager.Database
             return null;
         }
 
-        public Artist GetArtistByName(string p_ArtistName)
+        public Artist ReadArtistByName(string p_ArtistName)
         {
+            CheckUpdateArtistResources();
             Artist result;
             if(m_ArtistsByName.TryGetValue(p_ArtistName, out result))
             {
@@ -269,23 +291,48 @@ namespace DatabaseManager.Database
             }
             return null;
         }
+
+        public IList<Artist> ReadArtistByCountry(string p_Country)
+        {
+            CheckUpdateArtistResources();
+            return m_ArtistsbyId.Values.Where(x => x.Country.Equals(p_Country)).ToList();
+        }
+
+        public IList<Artist> ReadArtistByYear(int p_Year)
+        {
+            CheckUpdateArtistResources();
+            return m_ArtistsbyId.Values.Where(x => x.Year.Equals(p_Year)).ToList();
+        }
         #endregion
 
         #region Album
-        public IList<Album> GetAllAlbums()
+        public IList<Album> ReadAllAlbums()
         {
             CkeckUpdateAlbumResources();
             return m_Albums.Values.ToList();
         }
 
-        public Album GetAlbumById(int p_AlbumId)
+        public Album ReadAlbumById(int p_AlbumId)
         {
+            CkeckUpdateAlbumResources();
             Album result;
             if (m_Albums.TryGetValue(p_AlbumId, out result))
             {
                 return result;
             }
             return null;
+        }
+
+        public IList<Album> ReadAlbumByYear(int p_Year)
+        {
+            CkeckUpdateAlbumResources();
+            return m_Albums.Values.Where(x => x.Year.Equals(p_Year)).ToList();
+        }
+
+        public IList<Album> ReadAlbumsByName(string p_Name)
+        {
+            CkeckUpdateAlbumResources();
+            return m_Albums.Values.Where(x => x.Name.Equals(p_Name)).ToList();
         }
         #endregion
 
@@ -308,7 +355,6 @@ namespace DatabaseManager.Database
             }
             return result;
         }
-        #endregion
         #endregion
 
 
@@ -355,7 +401,7 @@ namespace DatabaseManager.Database
             var collaborations = GetCollaborationByArtistId(p_ArtistId);
             foreach(var collab in collaborations)
             {
-                result.Add(GetAlbumById(collab.AlbumId));
+                result.Add(ReadAlbumById(collab.AlbumId));
             }
             return result;
         }
@@ -399,7 +445,7 @@ namespace DatabaseManager.Database
         {
             IList<Artist> result = new List<Artist>();
             var collaborations = GetAllCollaborations();
-            var artists = GetAllArtists();
+            var artists = ReadAllArtist();
 
             foreach(var artist in artists)
             {

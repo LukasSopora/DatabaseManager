@@ -35,7 +35,7 @@ namespace DatabaseManagerTests
         {
             CheckQueryHelper();
 
-            m_QueryHelper.GetAllArtists();
+            m_QueryHelper.ReadArtist();
         }
 
         [TestMethod]
@@ -44,10 +44,10 @@ namespace DatabaseManagerTests
             DatabaseHelper.InitDataBase();
             CheckQueryHelper();
 
-            m_QueryHelper.GetAllArtists();
+            m_QueryHelper.ReadArtist();
 
             DatabaseHelper.InitDataBase();
-            m_QueryHelper.GetAllArtists();
+            m_QueryHelper.ReadArtist();
         }
 
         [TestMethod]
@@ -55,7 +55,7 @@ namespace DatabaseManagerTests
         {
             CheckQueryHelper();
 
-            m_QueryHelper.GetAllAlbums();
+            m_QueryHelper.ReadAllAlbums();
         }
 
         [TestMethod]
@@ -83,11 +83,11 @@ namespace DatabaseManagerTests
         {
             CheckQueryHelper();
 
-            m_QueryHelper.GetAlbumById(1);
-            m_QueryHelper.GetAlbumById(2);
-            m_QueryHelper.GetAlbumById(3);
-            m_QueryHelper.GetAlbumById(4);
-            m_QueryHelper.GetAlbumById(5);
+            m_QueryHelper.ReadAlbumById(1);
+            m_QueryHelper.ReadAlbumById(2);
+            m_QueryHelper.ReadAlbumById(3);
+            m_QueryHelper.ReadAlbumById(4);
+            m_QueryHelper.ReadAlbumById(5);
         }
 
         
