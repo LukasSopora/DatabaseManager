@@ -24,11 +24,15 @@ namespace DatabaseManager.Database
         private DateTime m_AlbumModified;
         private DateTime m_CollaboModified;
 
+        private int[] m_AlbumCountIndex = new int[21];
+
         public QueryHelper()
         {
             InitArtists();
             InitAlbums();
             InitCollaborations();
+
+            InitializeIndex();
         }
 
         #region Initialization
@@ -467,7 +471,7 @@ namespace DatabaseManager.Database
         }
         #endregion
 
-        #region Album
+        #region CRUD Album
         public bool CreateAlbum(Album p_Album)
         {
             CheckUpdateAlbumResources();
@@ -501,6 +505,11 @@ namespace DatabaseManager.Database
             }
 
             m_Albums.Add(p_Album.Id, p_Album);
+
+            if (p_Album.Year >= 1990 && p_Album.Year <= 2010)
+            {
+                m_AlbumCountIndex[p_Album.Year - 1990]++;
+            }
 
             UnlockAlbums();
 
@@ -536,7 +545,7 @@ namespace DatabaseManager.Database
             return m_Albums.Values.Where(x => x.Name.Equals(p_Name)).ToList();
         }
 
-        public bool UpdateArtist(int p_AlbumId, Album p_Album)
+        public bool UpdateAlbum(int p_AlbumId, Album p_Album)
         {
             CheckUpdateAlbumResources();
 
@@ -560,7 +569,22 @@ namespace DatabaseManager.Database
             }
 
             LockAlbums();
+
+            //Decrease Index of old album
+            var oldAlbum = m_Albums[p_AlbumId];
+            if(oldAlbum.Year >= 1990 && oldAlbum.Year <= 2010)
+            {
+                m_AlbumCountIndex[oldAlbum.Year - 1990]--;
+            }
+
             m_Albums[p_AlbumId] = p_Album;
+
+            //Update Index
+            if (p_Album.Year >= 1990 && p_Album.Year <= 2010)
+            {
+                m_AlbumCountIndex[p_Album.Year - 1990]++;
+            }
+
             UnlockAlbums();
 
             return true;
@@ -608,6 +632,14 @@ namespace DatabaseManager.Database
                 m_ArtistCollaborations[id].Remove(p_AlbumId);
             }
             m_AlbumCollaborations.Remove(p_AlbumId);
+
+            //Decrease Index of old album
+            var oldAlbum = m_Albums[p_AlbumId];
+            if(oldAlbum.Year >= 1990 && oldAlbum.Year <= 2010)
+            {
+                m_AlbumCountIndex[oldAlbum.Year - 1990]--;
+            }
+
             UnlockCollaborations();
             UnlockAlbums();
             return true;
@@ -759,72 +791,34 @@ namespace DatabaseManager.Database
             UnlockCollaborations();
             return true;
         }
-
-        public IList<Collaboration> GetAllCollaborations()
-        {
-            if (!File.Exists(DB_Constants.DB_Collaboration_Path))
-            {
-                return null;
-            }
-
-            IList<Collaboration> result = new List<Collaboration>();
-            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    result.Add(JsonConvert.DeserializeObject<Collaboration>(line));
-                }
-            }
-            return result;
-        }
         #endregion
 
-
-        public IList<Collaboration> GetCollaborationByArtistId(int p_ArtistId)
+        #region Album Indexing
+        private void InitializeIndex()
         {
-            IList<Collaboration> result = new List<Collaboration>();
-            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
+            m_AlbumCountIndex = new int[21];
+            foreach (var album in m_Albums.Values)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                if(album.Year >= 1990 && album.Year <= 2010)
                 {
-                    var collaboration = JsonConvert.DeserializeObject<Collaboration>(line);
-                    if (collaboration.ArtistId == p_ArtistId)
-                    {
-                        result.Add(collaboration);
-                    }
+                    m_AlbumCountIndex[album.Year - 1990]++;
                 }
             }
-            return result;
         }
-
-        public IList<Collaboration> GetCollaborationByAlbumId(int p_AlbumId)
-        {
-            IList<Collaboration> result = new List<Collaboration>();
-            using (var reader = new StreamReader(DB_Constants.DB_Collaboration_Path))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    var collaboration = JsonConvert.DeserializeObject<Collaboration>(line);
-                    if (collaboration.AlbumId == p_AlbumId)
-                    {
-                        result.Add(collaboration);
-                    }
-                }
-            }
-            return result;
-        }
+        #endregion
 
         #region Queries
         public IList<Album> GetAllAlbumsByArtistId(int p_ArtistId)
         {
-            IList<Album> result = new List<Album>();
-            var collaborations = GetCollaborationByArtistId(p_ArtistId);
-            foreach(var collab in collaborations)
+            if(!m_ArtistsById.ContainsKey(p_ArtistId))
             {
-                result.Add(ReadAlbumById(collab.AlbumId));
+                return null;
+            }
+
+            IList<Album> result = new List<Album>();
+            foreach(var albumId in m_ArtistCollaborations[p_ArtistId])
+            {
+                result.Add(m_Albums[albumId]);
             }
             return result;
         }
@@ -832,16 +826,11 @@ namespace DatabaseManager.Database
         public int GetLatestAlbumRelease()
         {
             int latest = 0;
-            using (var reader = new StreamReader(DB_Constants.DB_Album_Path))
+            foreach(var album in m_Albums.Values)
             {
-                string line;
-                while((line = reader.ReadLine()) != null)
+                if(album.Year > latest)
                 {
-                    var album = JsonConvert.DeserializeObject<Album>(line);
-                    if(album.Year > latest)
-                    {
-                        latest = album.Year;
-                    }
+                    latest = album.Year;
                 }
             }
             return latest;
@@ -849,32 +838,21 @@ namespace DatabaseManager.Database
 
         public int GetArtistFoundingYear(int p_ArtistId)
         {
-            using (var reader = new StreamReader(DB_Constants.DB_Artist_Path))
+            if(m_ArtistsById.ContainsKey(p_ArtistId))
             {
-                string line;
-                while((line = reader.ReadLine()) != null)
-                {
-                    var artist = JsonConvert.DeserializeObject<Artist>(line);
-                    if(artist.Id == p_ArtistId)
-                    {
-                        return artist.Year;
-                    }
-                }
+                return m_ArtistsById[p_ArtistId].Year;
             }
-            return -1;
+            return -1; //Fail
         }
 
         public IList<Artist> GetArtistsNoAlbums()
         {
             IList<Artist> result = new List<Artist>();
-            var collaborations = GetAllCollaborations();
-            var artists = ReadAllArtist();
-
-            foreach(var artist in artists)
+            foreach(var artistId in m_ArtistsById.Keys)
             {
-                if(GetAllAlbumsByArtistId(artist.Id).Count == 0)
+                if(!m_ArtistCollaborations.ContainsKey(artistId))
                 {
-                    result.Add(artist);
+                    result.Add(m_ArtistsById[artistId]);
                 }
             }
             return result;
