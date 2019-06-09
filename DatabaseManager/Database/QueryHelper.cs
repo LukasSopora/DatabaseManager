@@ -12,6 +12,9 @@ namespace DatabaseManager.Database
 {
     public class QueryHelper
     {
+        private const string m_Album_Path = "TestData/albums.csv";
+        private const string m_Artist_Path = "TestData/artists.csv";
+
         private IDictionary<int, Album> m_Albums;
 
         private IDictionary<int, Artist> m_ArtistsById;
@@ -158,6 +161,40 @@ namespace DatabaseManager.Database
         {
             return File.Exists(DB_Constants.DB_Album_Path_Locked);
         }
+
+        internal void ExportCSV()
+        {
+            File.WriteAllText(m_Artist_Path, string.Empty);
+            File.WriteAllText(m_Album_Path, string.Empty);
+
+            var writer = new StreamWriter(m_Artist_Path);
+            string line;
+            writer.WriteLine("# name, year, country");
+            foreach(var artist in m_ArtistsById.Values)
+            {
+                line = "\"" + artist.Name + "\", " + artist.Year + ", " + artist.Country;
+                writer.WriteLine(line);
+            }
+
+            writer = new StreamWriter(m_Album_Path);
+            string artistName;
+            writer.WriteLine("# name, artist, year,");
+            foreach(var album in m_Albums.Values)
+            {
+                line = "\"" + album.Name + "\", \"";
+                foreach(var artistId in m_AlbumCollaborations[album.Id])
+                {
+                    artistName = m_ArtistsById[artistId].Name;
+                    line += artistName + ", ";
+                }
+                line.Remove(line.Length - 2);
+                line.Remove(line.Length - 1);
+
+                line += "\", " + album.Year + ",";
+                writer.WriteLine();
+            }
+        }
+
         private bool CheckArtistsLocked()
         {
             return File.Exists(DB_Constants.DB_Artist_Path_Locked);
@@ -268,7 +305,7 @@ namespace DatabaseManager.Database
             return true;
         }
 
-        public IList<Artist> ReadAllArtist()
+        public IList<Artist> ReadAllArtists()
         {
             CheckUpdateArtistResources();
             return m_ArtistsById.Values.ToList();

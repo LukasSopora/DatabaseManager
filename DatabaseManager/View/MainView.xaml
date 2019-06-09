@@ -14,80 +14,145 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Expander
-            IsExpanded="True"
-            Grid.Row="0" Grid.Column="0"
-            Grid.RowSpan="2"
-            ExpandDirection="Right">
-
-            <Grid
-                Margin="0,20,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <DockPanel Grid.Row="0" Margin="10">
-                    <StackPanel>
-                        <Button
+        <DockPanel Grid.Row="0" Margin="10">
+            <StackPanel>
+                <Button
                         Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
                         Command="{Binding InitDBCommand}"
                         materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitDBProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ButtonProgressAssist.Value="-1"
                         materialDesign:ButtonProgressAssist.IsIndeterminate="True">
-                            <materialDesign:PackIcon
+                    <materialDesign:PackIcon
                             Kind="Database"
                             Width="36"
                             Height="36"/>
-                        </Button>
-                        <TextBlock Text="Init database"/>
-                    </StackPanel>
+                </Button>
+                <TextBlock Text="Init database"/>
+            </StackPanel>
 
-                    <StackPanel Margin="15"
+            <StackPanel Margin="15"
                     Visibility="{Binding InitDBFinished, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <TextBlock Text="Time elapsed [s:ms] :"/>
-                        <TextBox 
+                <TextBlock Text="Time elapsed [s:ms] :"/>
+                <TextBox 
                         Text="{Binding InitDBDuration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat=ss\\:fff}" 
                         IsReadOnly="True"/>
-                    </StackPanel>
-                </DockPanel>
+            </StackPanel>
+        </DockPanel>
 
-                <DockPanel Grid.Row="1" Margin="10">
-                    <StackPanel>
-                        <Button
+        <DockPanel Grid.Row="1" Margin="10">
+            <StackPanel>
+                <Button
                         Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
                         Command="{Binding InitQueryCommand}"
                         materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding InitQueryProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ButtonProgressAssist.Value="-1"
                         materialDesign:ButtonProgressAssist.IsIndeterminate="True">
-                            <materialDesign:PackIcon
+                    <materialDesign:PackIcon
                             Kind="ArrowRightDropCircle"
                             Width="36"
                             Height="36"/>
-                        </Button>
-                        <TextBlock Text="Init Queries"/>
-                    </StackPanel>
+                </Button>
+                <TextBlock Text="Init Queries"/>
+            </StackPanel>
 
-                    <StackPanel Margin="15"
+            <StackPanel Margin="15"
                     Visibility="{Binding InitQueryFinished, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <TextBlock Text="Time elapsed [s:ms] :"/>
-                        <TextBox 
+                <TextBlock Text="Time elapsed [s:ms] :"/>
+                <TextBox 
                         Text="{Binding InitQueryDuration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat=ss\\:fff}" 
                         IsReadOnly="True"/>
-                    </StackPanel>
-                </DockPanel>
+            </StackPanel>
+        </DockPanel>
 
-            </Grid>
-        </Expander>
-        
+        <StackPanel
+            Grid.Row="2" Grid.Column="0"
+            HorizontalAlignment="Left"
+            Margin="10">
+            <Button
+                Style="{StaticResource MaterialDesignFloatingActionAccentButton}"
+                Command="{Binding ExportCSVCommand}">
+                <materialDesign:PackIcon
+                    Kind="ArrowRightDropCircle"
+                    Width="36"
+                    Height="36"/>
+            </Button>
+            <TextBlock Text="Export CSV"/>
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="0" Grid.Column="1">
+            <TextBlock
+            Text="All albums from ..."/>
+            <ComboBox
+                ItemsSource="{Binding Artists, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                SelectedItem="{Binding ArtistQueryOne, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button
+                Content="Update"
+                Command="{Binding UpdateQueryOneCommand}"/>
+        </StackPanel>
+
+        <ListView
+            Grid.Row="1" Grid.Column="1"
+            ItemsSource="{Binding ArtistAlbums, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+
+        <StackPanel
+            Grid.Row="0" Grid.Column="2">
+            <TextBlock
+                Grid.Row="0" Grid.Column="2"
+                Text="Last Realease was on:"/>
+            <Button
+                Content="Update"
+                Command="{Binding UpdateQueryTwoCommand}"/>
+        </StackPanel>
+
+        <TextBox
+            Grid.Row="1" Grid.Column="2"
+            Text="{Binding LastReleaseYear, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+            IsReadOnly="True"
+            VerticalAlignment="Top"/>
+
+        <StackPanel
+            Grid.Row="0" Grid.Column="3">
+            <TextBlock
+            Text="Founding year from ..."/>
+            <ComboBox
+                ItemsSource="{Binding Artists, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                SelectedItem="{Binding ArtistQueryThree, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button
+                Content="Update"
+                Command="{Binding UpdateQueryThreeCommand}"/>
+        </StackPanel>
+
+        <TextBox
+            Grid.Row="1" Grid.Column="3"
+            Text="{Binding FoundingYear, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+            IsReadOnly="True"
+            VerticalAlignment="Top"/>
+
+        <StackPanel
+            Grid.Row="0" Grid.Column="4">
+            <TextBlock
+            Text="Bands with no released albums yet:"/>
+            <Button
+                Content="Update"
+                Command="{Binding UpdateQueryFourCommand}"/>
+        </StackPanel>
+
+        <ListView
+            Grid.Row="1" Grid.Column="4"
+            ItemsSource="{Binding ArtistsQueryFour, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+
     </Grid>
 </UserControl>

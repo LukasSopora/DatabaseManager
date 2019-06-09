@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using DatabaseManager;
 using DatabaseManager.Database;
 using System.Threading;
+using System.Collections.ObjectModel;
 
 namespace DatabaseManager.ViewModel
 {
@@ -26,6 +27,61 @@ namespace DatabaseManager.ViewModel
 
         private TimeSpan m_InitDBDuration;
         private TimeSpan m_InitQueryDuration;
+
+        private ObservableCollection<Artist> m_Artists =
+            new ObservableCollection<Artist>();
+        private ObservableCollection<Album> m_ArtistAlbums =
+            new ObservableCollection<Album>();
+        private ObservableCollection<Artist> m_ArtistsQueryFour =
+            new ObservableCollection<Artist>();
+
+
+        private Artist m_ArtistQueryOne;
+        private int m_LastRealeaseYear;
+        private int m_FoundingYear;
+        private Artist m_ArtistQueryThree;
+
+        public int FoundingYear
+        {
+            get { return m_FoundingYear; }
+            set { SetProperty(ref m_FoundingYear, value); }
+        }
+
+        public ObservableCollection<Artist> ArtistsQueryFour
+        {
+            get { return m_ArtistsQueryFour; }
+            set { SetProperty(ref m_ArtistsQueryFour, value); }
+        }
+
+        public Artist ArtistQueryThree
+        {
+            get { return m_ArtistQueryThree; }
+            set { SetProperty(ref m_ArtistQueryThree, value); }
+        }
+
+        public Artist ArtistQueryOne
+        {
+            get { return m_ArtistQueryOne; }
+            set { SetProperty(ref m_ArtistQueryOne, value); }
+        }
+
+        public int LastReleaseYear
+        {
+            get { return m_LastRealeaseYear; }
+            set { SetProperty(ref m_LastRealeaseYear, value); }
+        }
+
+        public ObservableCollection<Album> ArtistAlbums
+        {
+            get { return m_ArtistAlbums; }
+            set { SetProperty(ref m_ArtistAlbums, value); }
+        }
+
+        public ObservableCollection<Artist> Artists
+        {
+            get { return m_Artists; }
+            set { SetProperty(ref m_Artists, value); }
+        }
 
         public bool InitQueryFinished
         {
@@ -70,10 +126,12 @@ namespace DatabaseManager.ViewModel
         public DelegateCommand InitDBCommand { get; private set; }
         public DelegateCommand InitQueryCommand { get; private set; }
 
-        public DelegateCommand AllAlbumsFromArtist { get; private set; }
-        public DelegateCommand LatestAlbumCommand { get; private set; }
-        public DelegateCommand BandFormedCommand { get; private set; }
-        public DelegateCommand NoAlbumsCommand { get; private set; }
+        public DelegateCommand UpdateQueryOneCommand { get; private set; }
+        public DelegateCommand UpdateQueryTwoCommand { get; private set; }
+        public DelegateCommand UpdateQueryThreeCommand { get; private set; }
+        public DelegateCommand UpdateQueryFourCommand { get; private set; }
+
+        public DelegateCommand ExportCSVCommand { get; private set; }
 
         private void InitalizeCommands()
         {
@@ -83,17 +141,55 @@ namespace DatabaseManager.ViewModel
             InitQueryCommand = new DelegateCommand(OnInitQuery);
             RaisePropertyChanged(nameof(InitQueryCommand));
 
-            AllAlbumsFromArtist = new DelegateCommand(OnAllAlbumbsFromArtist);
-            RaisePropertyChanged(nameof(AllAlbumsFromArtist));
+            UpdateQueryOneCommand = new DelegateCommand(OnQueryOne);
+            RaisePropertyChanged(nameof(UpdateQueryOneCommand));
 
-            LatestAlbumCommand = new DelegateCommand(OnLatestAlbum);
-            RaisePropertyChanged(nameof(LatestAlbumCommand));
+            UpdateQueryTwoCommand = new DelegateCommand(OnQueryTwo);
+            RaisePropertyChanged(nameof(UpdateQueryTwoCommand));
 
-            BandFormedCommand = new DelegateCommand(OnBandFormed);
-            RaisePropertyChanged(nameof(BandFormedCommand));
+            UpdateQueryThreeCommand = new DelegateCommand(OnQueryThree);
+            RaisePropertyChanged(nameof(UpdateQueryThreeCommand));
 
-            NoAlbumsCommand = new DelegateCommand(OnNoAlbums);
-            RaisePropertyChanged(nameof(NoAlbumsCommand));
+            UpdateQueryFourCommand = new DelegateCommand(OnQueryFour);
+            RaisePropertyChanged(nameof(UpdateQueryFourCommand));
+
+            ExportCSVCommand = new DelegateCommand(OnExportCSV);
+            RaisePropertyChanged(nameof(ExportCSVCommand));
+        }
+
+        private void OnExportCSV()
+        {
+            m_QueryHelper.ExportCSV();
+        }
+
+        private void OnQueryFour()
+        {
+            ArtistsQueryFour = new ObservableCollection<Artist>(m_QueryHelper.GetArtistsNoAlbums());
+        }
+
+        private void OnQueryThree()
+        {
+            if(m_ArtistQueryThree == null)
+            {
+                return;
+            }
+
+            FoundingYear = m_QueryHelper.GetArtistFoundingYear(m_ArtistQueryThree.Id);
+        }
+
+        private void OnQueryTwo()
+        {
+            LastReleaseYear = m_QueryHelper.GetLatestAlbumRelease();
+        }
+
+        private void OnQueryOne()
+        {
+            if(m_ArtistQueryOne == null)
+            {
+                return;
+            }
+
+            ArtistAlbums = new ObservableCollection<Album>(m_QueryHelper.GetAllAlbumsByArtistId(m_ArtistQueryOne.Id));
         }
 
         private void OnInitQuery()
@@ -116,6 +212,14 @@ namespace DatabaseManager.ViewModel
         {
             InitQueryProgress = false;
             InitQueryFinished = true;
+
+            InitSpecialQueries();
+        }
+
+        private void InitSpecialQueries()
+        {
+            Artists = new ObservableCollection<Artist>(m_QueryHelper.ReadAllArtists());
+
         }
 
         private void OnInitDB()
@@ -138,26 +242,6 @@ namespace DatabaseManager.ViewModel
         {
             InitDBProgress = false;
             InitDBFinished = true;
-        }
-
-        private void OnAllAlbumbsFromArtist()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnLatestAlbum()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnBandFormed()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnNoAlbums()
-        {
-            throw new NotImplementedException();
         }
         #endregion
 
