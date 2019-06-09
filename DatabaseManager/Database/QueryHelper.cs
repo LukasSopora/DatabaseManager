@@ -308,7 +308,7 @@ namespace DatabaseManager.Database
         {
             CheckUpdateArtistResources();
 
-            if (!m_ArtistsById.ContainsKey(p_AlbumId) || p_Artist.Id != p_AlbumId)
+            if (!m_ArtistsById.ContainsKey(p_ArtistId) || p_Artist.Id != p_ArtistId)
             {
                 return false;
             }
@@ -328,8 +328,8 @@ namespace DatabaseManager.Database
             }
 
             LockArtists();
-            string name = m_ArtistsById[p_AlbumId].Name;
-            m_ArtistsById[p_AlbumId] = p_Artist;
+            string name = m_ArtistsById[p_ArtistId].Name;
+            m_ArtistsById[p_ArtistId] = p_Artist;
             m_ArtistsByName[name] = p_Artist;
             UnlockArtists();
 
@@ -615,6 +615,151 @@ namespace DatabaseManager.Database
         #endregion
 
         #region Collaboration
+        public bool CreateCollaboration(int p_ArtistId, int p_AlbumId)
+        {
+            CheckUpdateArtistResources();
+            CheckUpdateAlbumResources();
+            CheckUpdateCollaboResources();
+
+            if(!m_ArtistsById.ContainsKey(p_ArtistId) || !m_Albums.ContainsKey(p_AlbumId))
+            {
+                return false;
+            }
+
+            if (CheckCollaborationsLocked())
+            {
+                int counter = 0;
+                while (CheckCollaborationsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockCollaborations();
+            if(!m_ArtistCollaborations.ContainsKey(p_ArtistId))
+            {
+                m_ArtistCollaborations.Add(p_ArtistId, new List<int>() { p_AlbumId });
+            }
+            else
+            {
+                if(!m_ArtistCollaborations[p_ArtistId].Contains(p_AlbumId))
+                {
+                    m_ArtistCollaborations[p_ArtistId].Add(p_AlbumId);
+                }
+            }
+            
+            if(!m_AlbumCollaborations.ContainsKey(p_AlbumId))
+            {
+                m_AlbumCollaborations.Add(p_AlbumId, new List<int>() { p_ArtistId });
+            }
+            else
+            {
+                if(!m_AlbumCollaborations[p_AlbumId].Contains(p_ArtistId))
+                {
+                    m_AlbumCollaborations[p_AlbumId].Add(p_ArtistId);
+                }
+            }
+            UnlockCollaborations();
+            return true;
+        }
+
+        public IList<Collaboration> ReadAllCollaborations()
+        {
+            CheckUpdateCollaboResources();
+            IList<Collaboration> result = new List<Collaboration>();
+
+            foreach(var artist in m_ArtistCollaborations.Keys)
+            {
+                foreach(var album in m_ArtistCollaborations[artist])
+                {
+                    result.Add(new Collaboration(artist, album));
+                }
+            }
+
+            return result;
+        }
+
+        public IList<Collaboration> ReadCollaborationsByArtist(int p_ArtistId)
+        {
+            CheckUpdateCollaboResources();
+            IList<Collaboration> result = new List<Collaboration>();
+            if(m_ArtistCollaborations.ContainsKey(p_ArtistId))
+            {
+                foreach(var albumId in m_ArtistCollaborations[p_ArtistId])
+                {
+                    result.Add(new Collaboration(p_ArtistId, albumId));
+                }
+            }
+            return result;
+        }
+
+        public IList<Collaboration> ReadCollaborationsByAlbum(int p_AlbumId)
+        {
+            CheckUpdateCollaboResources();
+            IList<Collaboration> result = new List<Collaboration>();
+            if (m_AlbumCollaborations.ContainsKey(p_AlbumId))
+            {
+                foreach (var artistId in m_AlbumCollaborations[p_AlbumId])
+                {
+                    result.Add(new Collaboration(artistId, p_AlbumId));
+                }
+            }
+            return result;
+        }
+
+        public bool UpdateCollaboration(int p_ArtistId, int p_AlbumId, int p_AlbumIdNew)
+        {
+            if(DeleteCollaboration(p_ArtistId, p_AlbumId))
+            {
+                CreateCollaboration(p_ArtistId, p_AlbumIdNew);
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool DeleteCollaboration(int p_ArtistId, int p_AlbumId)
+        {
+            CheckUpdateCollaboResources();
+            
+            if(!m_ArtistCollaborations.ContainsKey(p_ArtistId) || !m_AlbumCollaborations.ContainsKey(p_AlbumId))
+            {
+                return false;
+            }
+
+            if(!m_AlbumCollaborations[p_AlbumId].Contains(p_ArtistId) || !m_ArtistCollaborations[p_ArtistId].Contains(p_AlbumId))
+            {
+                return false;
+            }
+
+            if (CheckCollaborationsLocked())
+            {
+                int counter = 0;
+                while (CheckCollaborationsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+            
+            LockCollaborations();
+            m_ArtistCollaborations[p_ArtistId].Remove(p_AlbumId);
+            m_AlbumCollaborations[p_AlbumId].Remove(p_ArtistId);
+            UnlockCollaborations();
+            return true;
+        }
+
         public IList<Collaboration> GetAllCollaborations()
         {
             if (!File.Exists(DB_Constants.DB_Collaboration_Path))

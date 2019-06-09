@@ -11,6 +11,16 @@ namespace DatabaseManager.Model
         private int m_ArtistId;
         private int m_AlbumId;
 
+        public Collaboration()
+        {
+        }
+
+        public Collaboration(int p_ArtistId, int p_AlbumId)
+        {
+            m_ArtistId = p_ArtistId;
+            m_AlbumId = p_AlbumId;
+        }
+
         public int AlbumId
         {
             get { return m_AlbumId; }
