@@ -130,7 +130,7 @@ namespace DatabaseManager.Database
             InitArtists();
         }
 
-        private void CkeckUpdateAlbumResources()
+        private void CheckUpdateAlbumResources()
         {
             if (File.GetLastWriteTime(DB_Constants.DB_Album_Path) == m_AlbumModified)
             {
@@ -245,7 +245,7 @@ namespace DatabaseManager.Database
             LockArtists();
             if(p_Artist.Id == 0) //Id not initialized
             {
-                p_Artist.Id = m_ArtistsById.Keys.Max();
+                p_Artist.Id = m_ArtistsById.Keys.Max() + 1;
             }
             else //Id initialized --> check if key already exists
             {
@@ -308,7 +308,7 @@ namespace DatabaseManager.Database
         {
             CheckUpdateArtistResources();
 
-            if (!m_ArtistsById.ContainsKey(p_ArtistId) || p_Artist.Id != p_ArtistId)
+            if (!m_ArtistsById.ContainsKey(p_AlbumId) || p_Artist.Id != p_AlbumId)
             {
                 return false;
             }
@@ -328,8 +328,8 @@ namespace DatabaseManager.Database
             }
 
             LockArtists();
-            string name = m_ArtistsById[p_ArtistId].Name;
-            m_ArtistsById[p_ArtistId] = p_Artist;
+            string name = m_ArtistsById[p_AlbumId].Name;
+            m_ArtistsById[p_AlbumId] = p_Artist;
             m_ArtistsByName[name] = p_Artist;
             UnlockArtists();
 
@@ -371,6 +371,7 @@ namespace DatabaseManager.Database
         public bool DeleteArtist(int p_ArtistId)
         {
             CheckUpdateArtistResources();
+            CheckUpdateCollaboResources();
 
             if (CheckArtistsLocked())
             {
@@ -386,26 +387,135 @@ namespace DatabaseManager.Database
                 }
             }
 
+            if (CheckCollaborationsLocked())
+            {
+                int counter = 0;
+                while (CheckCollaborationsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
             LockArtists();
+            LockCollaborations();
             string name = m_ArtistsById[p_ArtistId].Name;
             m_ArtistsById.Remove(p_ArtistId);
             m_ArtistsByName.Remove(name);
-            //TODO Delete Collaborations
+            IList<int> albumIds = m_ArtistCollaborations[p_ArtistId];
+            foreach(var id in albumIds)
+            {
+                m_AlbumCollaborations[p_ArtistId].Remove(p_ArtistId);
+            }
+            m_ArtistCollaborations.Remove(p_ArtistId);
+            UnlockCollaborations();
+            UnlockArtists();
+            return true;
+        }
+
+        public bool DeleteArtist(string p_ArtistName)
+        {
+            CheckUpdateArtistResources();
+            CheckUpdateCollaboResources();
+
+            if (CheckArtistsLocked())
+            {
+                int counter = 0;
+                while (CheckArtistsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if (CheckCollaborationsLocked())
+            {
+                int counter = 0;
+                while (CheckCollaborationsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockArtists();
+            LockCollaborations();
+            int artistId = m_ArtistsByName[p_ArtistName].Id;
+            m_ArtistsByName.Remove(p_ArtistName);
+            m_ArtistsById.Remove(artistId);
+            IList<int> albumIds = m_ArtistCollaborations[artistId];
+            foreach (var id in albumIds)
+            {
+                m_AlbumCollaborations[id].Remove(artistId);
+            }
+            m_ArtistCollaborations.Remove(artistId);
+            UnlockCollaborations();
             UnlockArtists();
             return true;
         }
         #endregion
 
         #region Album
+        public bool CreateAlbum(Album p_Album)
+        {
+            CheckUpdateAlbumResources();
+
+            if (CheckAlbumsLocked())
+            {
+                int counter = 0;
+                while (CheckAlbumsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockAlbums();
+            if (p_Album.Id == 0) //Id not initialized
+            {
+                p_Album.Id = m_Albums.Keys.Max() + 1;
+            }
+            else //Id initialized --> check if key already exists
+            {
+                if (m_Albums.ContainsKey(p_Album.Id))
+                {
+                    UnlockAlbums();
+                    return false;
+                }
+            }
+
+            m_Albums.Add(p_Album.Id, p_Album);
+
+            UnlockAlbums();
+
+            return true;
+        }
+
         public IList<Album> ReadAllAlbums()
         {
-            CkeckUpdateAlbumResources();
+            CheckUpdateAlbumResources();
             return m_Albums.Values.ToList();
         }
 
         public Album ReadAlbumById(int p_AlbumId)
         {
-            CkeckUpdateAlbumResources();
+            CheckUpdateAlbumResources();
             Album result;
             if (m_Albums.TryGetValue(p_AlbumId, out result))
             {
@@ -416,14 +526,91 @@ namespace DatabaseManager.Database
 
         public IList<Album> ReadAlbumByYear(int p_Year)
         {
-            CkeckUpdateAlbumResources();
+            CheckUpdateAlbumResources();
             return m_Albums.Values.Where(x => x.Year.Equals(p_Year)).ToList();
         }
 
         public IList<Album> ReadAlbumsByName(string p_Name)
         {
-            CkeckUpdateAlbumResources();
+            CheckUpdateAlbumResources();
             return m_Albums.Values.Where(x => x.Name.Equals(p_Name)).ToList();
+        }
+
+        public bool UpdateArtist(int p_AlbumId, Album p_Album)
+        {
+            CheckUpdateAlbumResources();
+
+            if (!m_Albums.ContainsKey(p_AlbumId) || p_Album.Id != p_AlbumId)
+            {
+                return false;
+            }
+
+            if (CheckAlbumsLocked())
+            {
+                int counter = 0;
+                while (CheckAlbumsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockAlbums();
+            m_Albums[p_AlbumId] = p_Album;
+            UnlockAlbums();
+
+            return true;
+        }
+
+        public bool DeleteAlbum(int p_AlbumId)
+        {
+            CheckUpdateAlbumResources();
+            CheckUpdateCollaboResources();
+
+            if (CheckAlbumsLocked())
+            {
+                int counter = 0;
+                while (CheckAlbumsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if (CheckCollaborationsLocked())
+            {
+                int counter = 0;
+                while (CheckCollaborationsLocked())
+                {
+                    counter++;
+                    Thread.Sleep(5);
+                    if (counter >= 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            LockAlbums();
+            LockCollaborations();
+            m_Albums.Remove(p_AlbumId);
+            IList<int> artistIds = m_AlbumCollaborations[p_AlbumId];
+            foreach (var id in artistIds)
+            {
+                m_ArtistCollaborations[id].Remove(p_AlbumId);
+            }
+            m_AlbumCollaborations.Remove(p_AlbumId);
+            UnlockCollaborations();
+            UnlockAlbums();
+            return true;
         }
         #endregion
 
